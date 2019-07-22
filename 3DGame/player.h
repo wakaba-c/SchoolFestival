@@ -88,7 +88,7 @@ typedef struct
 	D3DXVECTOR3	dest;										//モデルの最終到達点
 	D3DXVECTOR3	Difference;									//モデルの最大回転
 	int			nIdxShadow;									//影のID
-	int			nLife;										//体力
+	float		fLife;										//体力
 	MODEL		aModel[MAX_PLAYER];							//モデルの情報
 	bool bJump;												//ジャンプしているかどうか
 	int CurrentFrame;									//現在のフレーム数

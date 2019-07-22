@@ -275,11 +275,11 @@ void UpdateEnemy(void)
 					//“–‚½‚è”»’è
 					if (SphereModel(COLLISIONTYPE_WEAPON, &g_aEnemy[nCntEnemy].pos, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &pPlayer->move, &g_aEnemy[nCntEnemy].move, 50, 50))
 					{
-						pPlayer->nLife -= 3;
+						pPlayer->fLife -= 3;
 						pPlayer->nAnimationType = MOTIONTYPE_DAMAGE;
 
 						//ƒvƒŒƒCƒ„[‚Ì‘Ì—Í‚ª0‚É‚È‚Á‚½Žž
-						if (pPlayer->nLife <= 0)
+						if (pPlayer->fLife <= 0)
 						{
 							SetGameState(GAMESTATE_END);
 							SetResultState(RESULTSTATE_FAILD);
