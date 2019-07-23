@@ -125,7 +125,7 @@ void UpdateEXP(void)
 		fHeight = 0;
 	}
 
-	//ê›íË
+	//settei
 	SetVertexEXP(0, D3DXVECTOR3(70, 70, 0), D3DXCOLOR(1.0f, 0.27f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
 }
 //=============================================================================
