@@ -130,10 +130,10 @@ void UpdateGradation(void)
 		pVtx += 4;
 
 		//カラーチャートの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->nLife / (float)PLAYER_LIFE));
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->nLife / (float)PLAYER_LIFE));
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->nLife / (float)PLAYER_LIFE));
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->nLife / (float)PLAYER_LIFE));
+		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->fLife / (float)PLAYER_LIFE));
+		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->fLife / (float)PLAYER_LIFE));
+		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->fLife / (float)PLAYER_LIFE));
+		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f - 0.7f * (pPlayer->fLife / (float)PLAYER_LIFE));
 
 		//頂点データのアンロック
 		g_pVtxBuffGradation->Unlock();

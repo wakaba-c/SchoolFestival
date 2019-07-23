@@ -28,6 +28,7 @@
 #include "model.h"
 #include "telop.h"
 #include "sound.h"
+#include "hitpoint.h"
 
 //========================================================================================
 // マクロ定義
@@ -105,6 +106,9 @@ void InitGame(void)
 	//flowerの初期化処理
 	InitFlower();
 
+	//hitpointの初期化処理
+	InitHitPoint();
+
 	PlaySound(SOUND_LABEL_BGM001, false);
 
 	g_nCounterGameState = 0;
@@ -150,6 +154,9 @@ void UninitGame(void)
 
 	// flowerの終了処理
 	UninitFlower();
+
+	//hitpointの終了処理
+	UninitHitPoint();
 
 }
 
@@ -207,6 +214,9 @@ void UpdateGame(void)
 
 		// Flowerの更新処理
 		UpdateFlower();
+
+		//hitpointの更新処理
+		UpdateHitPoint();
 	}
 
 	//ポーズ切り替え
@@ -300,6 +310,9 @@ void DrawGame(void)
 
 	// メーター表示
 	DrawFlower();
+
+	//hitpointの描画処理
+	DrawHitPoint();
 
 	//テロップの描画処理
 	DrawTelop();

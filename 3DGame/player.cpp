@@ -103,11 +103,11 @@ void InitPlayer(void)
 
 	if (IsFinish())
 	{
-		g_player.nLife = PLAYER_LIFE;
+		g_player.fLife = PLAYER_LIFE;
 	}
 	else
 	{
-		g_player.nLife = 999;
+		g_player.fLife = 999;
 	}
 	
 	//影の作成
@@ -156,11 +156,11 @@ void UpdatePlayer(void)
 
 	if (GetTriggerKeyboard(DIK_8))
 	{
-		g_player.nLife += 1;
+		g_player.fLife += 1;
 	}
 	if (GetTriggerKeyboard(DIK_I))
 	{
-		g_player.nLife += -1;
+		g_player.fLife += -1;
 	}
 
 	g_player.posOld = g_player.pos;
@@ -684,7 +684,7 @@ void DrawPlayerData(void)
 	sprintf(&sData[0], "パーツ数 : %d\n", g_nMaxPlayer);
 	strcat(&sAnimation[0], &sData[0]);
 
-	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.nLife);
+	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.fLife);
 	strcat(&sAnimation[0], &sData[0]);
 
 	for (int nCntAnimation = 0; nCntAnimation < g_nMaxPlayer; nCntAnimation++)
