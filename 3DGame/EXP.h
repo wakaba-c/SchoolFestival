@@ -17,8 +17,7 @@
 //=============================================================================
 typedef struct
 {
-	float fMaxEXP;									//HPの最大値
-	float fNowEXP;									//現在のHP
+	float fNowEXP;									//現在の経験値
 	float fHeight;									//画像の幅の最大値
 } EXP;
 

@@ -30,6 +30,7 @@
 #include "sound.h"
 #include "hitpoint.h"
 #include "EXP.h"
+#include "level.h"
 
 //========================================================================================
 // マクロ定義
@@ -110,6 +111,9 @@ void InitGame(void)
 	//hitpointの初期化処理
 	InitHitPoint();
 
+	//レベルの初期化処理
+	InitLevel();
+
 	//経験値の初期化処理
 	InitEXP();
 
@@ -161,6 +165,9 @@ void UninitGame(void)
 
 	//hitpointの終了処理
 	UninitHitPoint();
+
+	//レベルの終了処理
+	UninitLevel();
 
 	//経験値の終了処理
 	UninitEXP();
@@ -225,8 +232,12 @@ void UpdateGame(void)
 		//hitpointの更新処理
 		UpdateHitPoint();
 
-		//経験値の湖心処理
+		//レベルの更新処理
+		UpdateLevel();
+
+		//経験値の更新処理
 		UpdateEXP();
+
 	}
 
 	//ポーズ切り替え
@@ -315,6 +326,9 @@ void DrawGame(void)
 
 	//経験値の描画処理
 	DrawEXP();
+
+	//レベルの描画処理
+	DrawLevel();
 
 	/*=======UI========*/
 	if (g_bUseUI == true)

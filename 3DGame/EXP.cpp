@@ -15,8 +15,8 @@
 #define TEXTURE_ADD_EXPbar	"data/tex/HPbar.png"		//読み込むテクスチャファイル名
 #define TEXTURE_ADD_EXPframe "data/tex/HPFrame.png"		//読み込むテクスチャファイル名
 #define MAX_EXP (2)									//テクスチャ枚数
-#define MAX_WIDTH (50.0f)									//画像の幅の最大値
-#define MAX_HEIGHT (50.0f)									//画像の高さの最大値
+#define MAX_WIDTH (70.0f)									//画像の幅の最大値
+#define MAX_HEIGHT (70.0f)									//画像の高さの最大値
 
 //=============================================================================
 // プロトタイプ宣言
@@ -37,8 +37,7 @@ void InitEXP(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 	PLAYER *pPlayer = GetPlayer();
 
-	g_EXP.fMaxEXP = 10;
-	g_EXP.fNowEXP = g_EXP.fMaxEXP;
+	g_EXP.fNowEXP = 0;
 	g_EXP.fHeight = MAX_WIDTH;
 
 	//テクスチャの読み込み
@@ -54,9 +53,9 @@ void InitEXP(void)
 		NULL);
 
 	//テクスチャ設定
-	SetVertexEXP(0, D3DXVECTOR3(100, 100, 0), D3DXCOLOR(1.0f, 0.27f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexEXP(0, D3DXVECTOR3(70, 70, 0), D3DXCOLOR(1.0f, 0.27f, 0.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
 
-	SetVertexEXP(1, D3DXVECTOR3(100, 100, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexEXP(1, D3DXVECTOR3(70, 70, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
 
 }
 //=============================================================================
@@ -92,12 +91,42 @@ void UpdateEXP(void)
 	float NowEXP;
 	float fHeight;																	//現在の画像の幅
 
-	g_EXP.fNowEXP = pPlayer->fEXP;												//現在のHP
+	//プレイヤーレベルが1のとき
+	if (pPlayer->nNowLevel == 1)
+	{
+		//現在の経験値をそのまま代入
+		g_EXP.fNowEXP = pPlayer->fNowEXP;												//現在の経験値
+	}
+	//プレイヤーレベルが2又は3のとき
+	else if (pPlayer->nNowLevel == 2 || pPlayer->nNowLevel == 3)
+	{
+		//現在の経験値を一つ前のレベルの経験値上限の差分を代入
+		g_EXP.fNowEXP = pPlayer->fNowEXP - pPlayer->nLevelUp[pPlayer->nNowLevel - 1];
+	}
 
-	NowEXP = g_EXP.fNowEXP / g_EXP.fMaxEXP;									//HPの比率計算
+	//レベルが最大のとき
+	if (pPlayer->nNowLevel == MAX_LEVEL)
+	{
+		//最大レベルの経験値上限を一つ前の経験値上限の差を割る
+		NowEXP = g_EXP.fNowEXP / (pPlayer->nLevelUp[MAX_LEVEL + 1] - pPlayer->nLevelUp[pPlayer->nNowLevel]);//経験値の比率計算
+	}
+	else
+	{
+		//一つ次のレベルの経験値上限を今のレベルの経験値上限の差を割る
+		NowEXP = g_EXP.fNowEXP / (pPlayer->nLevelUp[pPlayer->nNowLevel + 1] - pPlayer->nLevelUp[pPlayer->nNowLevel]);//経験値の比率計算
+	}
+
+	//描画すべき画像幅　＝　比率　×　最大の長さ
 	fHeight = NowEXP * g_EXP.fHeight;												//描画すべき画像幅がいくらなのか
 
-	SetVertexEXP(0, D3DXVECTOR3(100, 100, 0), D3DXCOLOR(1.0f, 0.27f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
+	//高さが最大長さ以上になったら
+	if (fHeight >= g_EXP.fHeight)
+	{
+		fHeight = 0;
+	}
+
+	//画像の幅を代入
+	SetVertexEXP(0, D3DXVECTOR3(70, 70, 0), D3DXCOLOR(1.0f, 0.27f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
 }
 //=============================================================================
 // 描画処理
