@@ -59,6 +59,7 @@ void InitPlayer(void)
 	g_player.nAnimationType = 0;								//現在のアニメーション
 	g_player.nValueH = 0;									//コントローラー
 	g_player.nValueV = 0;									//コントローラー
+	g_player.fEXP = 0;											//経験値の初期化
 
 	// 位置・向きの初期設定
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
@@ -161,6 +162,11 @@ void UpdatePlayer(void)
 	if (GetTriggerKeyboard(DIK_I))
 	{
 		g_player.fLife += -1;
+	}
+	if (GetTriggerKeyboard(DIK_9))
+	{
+		//経験値加算
+		g_player.fEXP += 1;
 	}
 
 	g_player.posOld = g_player.pos;
@@ -684,7 +690,7 @@ void DrawPlayerData(void)
 	sprintf(&sData[0], "パーツ数 : %d\n", g_nMaxPlayer);
 	strcat(&sAnimation[0], &sData[0]);
 
-	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.fLife);
+	sprintf(&sData[0], "プレイヤー体力 : %f\n", g_player.fLife);
 	strcat(&sAnimation[0], &sData[0]);
 
 	for (int nCntAnimation = 0; nCntAnimation < g_nMaxPlayer; nCntAnimation++)
