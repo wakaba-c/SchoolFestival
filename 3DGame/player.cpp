@@ -14,6 +14,7 @@
 #include "tutorial.h"
 #include "sound.h"
 #include "telop.h"
+#include "level.h"
 
 //=============================================================================
 // マクロ定義
@@ -57,8 +58,11 @@ void InitPlayer(void)
 	g_player.CurrentFrame = 0;									//現在のフレーム数
 	g_player.CurrentKey = 1;									//現在のキー
 	g_player.nAnimationType = 0;								//現在のアニメーション
-	g_player.nValueH = 0;									//コントローラー
-	g_player.nValueV = 0;									//コントローラー
+	g_player.nValueH = 0;										//コントローラー
+	g_player.nValueV = 0;										//コントローラー
+	g_player.fNowEXP = 0;										//経験値の初期化
+	g_player.nNowLevel = 0;										//初期レベル
+	g_player.nLevelUp[MAX_LEVEL + 1] = {};						//レベルアップに必要な経験値の初期化
 
 	// 位置・向きの初期設定
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
@@ -150,6 +154,10 @@ void UninitPlayer(void)
 void UpdatePlayer(void)
 {
 	CAMERA *pCamera = GetCamera();
+	g_player.nLevelUp[0] = 0;
+	g_player.nLevelUp[1] = 10;
+	g_player.nLevelUp[2] = 20;
+	g_player.nLevelUp[3] = 30;
 
 	// リスナーの更新
 	UpdateListener(g_player.pos, g_player.move, g_player.rot, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
@@ -161,6 +169,21 @@ void UpdatePlayer(void)
 	if (GetTriggerKeyboard(DIK_I))
 	{
 		g_player.fLife += -1;
+	}
+	if (GetTriggerKeyboard(DIK_9))
+	{
+		//経験値加算
+		g_player.fNowEXP += 1;
+	}
+
+	//今の経験値がレベルアップに必要な経験値より大きかったら
+	if (g_player.fNowEXP >= g_player.nLevelUp[g_player.nNowLevel])
+	{
+		//レベルアップ
+		g_player.nNowLevel += 1;
+
+		//表示数字変える
+		AddLevel(g_player.nNowLevel);
 	}
 
 	g_player.posOld = g_player.pos;
@@ -684,7 +707,7 @@ void DrawPlayerData(void)
 	sprintf(&sData[0], "パーツ数 : %d\n", g_nMaxPlayer);
 	strcat(&sAnimation[0], &sData[0]);
 
-	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.fLife);
+	sprintf(&sData[0], "プレイヤー体力 : %f\n", g_player.fLife);
 	strcat(&sAnimation[0], &sData[0]);
 
 	for (int nCntAnimation = 0; nCntAnimation < g_nMaxPlayer; nCntAnimation++)

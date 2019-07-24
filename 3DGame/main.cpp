@@ -317,7 +317,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitModel();
 
 	//モードの初期化
-	SetMode(MODE_TITLE);
+	SetMode(MODE_GAME);
 
 	//フェードの初期化
 	InitFade(g_mode);

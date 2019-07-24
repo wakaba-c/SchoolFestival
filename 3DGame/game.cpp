@@ -29,6 +29,8 @@
 #include "telop.h"
 #include "sound.h"
 #include "hitpoint.h"
+#include "EXP.h"
+#include "level.h"
 
 //========================================================================================
 // マクロ定義
@@ -109,6 +111,12 @@ void InitGame(void)
 	//hitpointの初期化処理
 	InitHitPoint();
 
+	//レベルの初期化処理
+	InitLevel();
+
+	//経験値の初期化処理
+	InitEXP();
+
 	PlaySound(SOUND_LABEL_BGM001, false);
 
 	g_nCounterGameState = 0;
@@ -157,6 +165,12 @@ void UninitGame(void)
 
 	//hitpointの終了処理
 	UninitHitPoint();
+
+	//レベルの終了処理
+	UninitLevel();
+
+	//経験値の終了処理
+	UninitEXP();
 
 }
 
@@ -217,6 +231,13 @@ void UpdateGame(void)
 
 		//hitpointの更新処理
 		UpdateHitPoint();
+
+		//レベルの更新処理
+		UpdateLevel();
+
+		//経験値の更新処理
+		UpdateEXP();
+
 	}
 
 	//ポーズ切り替え
@@ -300,6 +321,15 @@ void DrawGame(void)
 	//エフェクトの描画処理
 	DrawEffect();
 
+	//hitpointの描画処理
+	DrawHitPoint();
+
+	//経験値の描画処理
+	DrawEXP();
+
+	//レベルの描画処理
+	DrawLevel();
+
 	/*=======UI========*/
 	if (g_bUseUI == true)
 	{
@@ -310,9 +340,6 @@ void DrawGame(void)
 
 	// メーター表示
 	DrawFlower();
-
-	//hitpointの描画処理
-	DrawHitPoint();
 
 	//テロップの描画処理
 	DrawTelop();

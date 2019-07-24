@@ -19,6 +19,7 @@
 //=============================================================================
 #define MAX_PLAYER	30
 #define PLAYER_LIFE		30
+#define MAX_LEVEL 3									//最大レベル
 
 //=============================================================================
 // 構造体定義
@@ -89,13 +90,16 @@ typedef struct
 	D3DXVECTOR3	Difference;									//モデルの最大回転
 	int			nIdxShadow;									//影のID
 	float		fLife;										//体力
+	float		fNowEXP;									//今の経験値
+	int			nNowLevel;									//今のレベル
+	int			nLevelUp[MAX_LEVEL + 1];					//レベルアップに必要な経験値
 	MODEL		aModel[MAX_PLAYER];							//モデルの情報
 	bool bJump;												//ジャンプしているかどうか
-	int CurrentFrame;									//現在のフレーム数
-	int CurrentKey;									//現在のキー
-	int nAnimationType;								//現在のアニメーション
-	float nValueH;									//コントローラー
-	float nValueV;									//コントローラー
+	int CurrentFrame;										//現在のフレーム数
+	int CurrentKey;											//現在のキー
+	int nAnimationType;										//現在のアニメーション
+	float nValueH;											//コントローラー
+	float nValueV;											//コントローラー
 } PLAYER;
 
 //=============================================================================
