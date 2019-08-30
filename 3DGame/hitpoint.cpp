@@ -95,13 +95,22 @@ void UpdateHitPoint(void)
 	PLAYER *pPlayer = GetPlayer();
 	float NowHP;
 	float fWidth;																	//åªç›ÇÃâÊëúÇÃïù
+	float fResidue;																	//âÊëúÇÃécÇËÇÃí∑Ç≥
 
 	g_HitPoint.fNowHp = (float)pPlayer->nLife;												//åªç›ÇÃHP
 
 	NowHP = g_HitPoint.fNowHp / g_HitPoint.fMaxHp;									//HPÇÃî‰ó¶åvéZ
 	fWidth = NowHP * g_HitPoint.fWidth;												//ï`âÊÇ∑Ç◊Ç´âÊëúïùÇ™Ç¢Ç≠ÇÁÇ»ÇÃÇ©
+	fResidue = (g_HitPoint.fMaxHp - g_HitPoint.fNowHp) / g_HitPoint.fMaxHp;						//HPÇÃécÇËÇÃî‰ó¶åvéZ
 
-	SetVertexHitPoint(0, D3DXVECTOR3(55, 15, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), fWidth, MAX_HEIGHT);
+	if (NowHP > 0.5f)
+	{
+		SetVertexHitPoint(0, D3DXVECTOR3(55, 15, 0), D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), fWidth, MAX_HEIGHT);
+	}
+	else
+	{
+		SetVertexHitPoint(0, D3DXVECTOR3(55, 15, 0), D3DXCOLOR(1.0f, NowHP * 2, 0.0f, 1.0f), fWidth, MAX_HEIGHT);
+	}
 }
 //=============================================================================
 // ï`âÊèàóù

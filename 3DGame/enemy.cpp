@@ -539,7 +539,7 @@ void UpdateEnemy(void)
 	//“–‚½‚è”»’è
 	if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &pPlayer->pos, &pPlayer->move, &pPlayer->move, 10, 10))
 	{
-		pPlayer->nLife -= 1;
+		//pPlayer->nLife -= 1;
 	}
 }
 
