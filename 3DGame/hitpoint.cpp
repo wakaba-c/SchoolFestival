@@ -101,7 +101,7 @@ void UpdateHitPoint(void)
 
 	NowHP = g_HitPoint.fNowHp / g_HitPoint.fMaxHp;									//HP‚Ì”ä—¦ŒvŽZ
 	fWidth = NowHP * g_HitPoint.fWidth;												//•`‰æ‚·‚×‚«‰æ‘œ•‚ª‚¢‚­‚ç‚È‚Ì‚©
-	fResidue = (g_HitPoint.fMaxHp - g_HitPoint.fNowHp) / g_HitPoint.fMaxHp;						//HP‚ÌŽc‚è‚Ì”ä—¦ŒvŽZ
+	fResidue = (g_HitPoint.fMaxHp - g_HitPoint.fNowHp) / g_HitPoint.fMaxHp;			//HP‚ÌŽc‚è‚Ì”ä—¦ŒvŽZ
 
 	if (NowHP > 0.5f)
 	{
