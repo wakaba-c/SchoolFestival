@@ -7,10 +7,13 @@
 //
 //========================================================================================
 #include "game.h"
+#include "magician.h"
 #include "input.h"
+#include "pointer.h"
 #include "fade.h"
 #include "time.h"
 #include "effect.h"
+#include "gamefade.h"
 #include "pause.h"
 #include "camera.h"
 #include "light.h"
@@ -18,17 +21,22 @@
 #include "player.h"
 #include "shadow.h"
 #include "wall.h"
+#include "bullet.h"
+#include "explosion.h"
 #include "effect.h"
+#include "trajectory.h"
 #include "gradation.h"
-#include "flower.h"
 #include "meshField.h"
+#include "meshSphere.h"
 #include "enemy.h"
 #include "meshorbit.h"
 #include "tutorial.h"
 #include "model.h"
 #include "telop.h"
 #include "sound.h"
+#include "magic.h"
 #include "hitpoint.h"
+#include "time.h"
 
 //========================================================================================
 // マクロ定義
@@ -76,6 +84,9 @@ void InitGame(void)
 	//ポーズ
 	InitPause();
 
+	// 魔法陣の初期化処理
+	InitMagician();
+
 	//影の初期化処理
 	InitShadow();
 
@@ -94,8 +105,20 @@ void InitGame(void)
 	// 敵の初期化処理
 	InitEnemy();
 
+	//ポインタの初期化処理
+	InitPointer();
+
+	//バレットの初期化処理
+	InitBullet();
+
+	//爆発の初期化処理
+	InitExplosion();
+
 	//フィールドの初期化処理
 	InitMeshField();
+
+	////フィールドの初期化処理
+	//InitMeshSphere();
 
 	//エフェクトの初期化処理
 	InitEffect();
@@ -103,13 +126,16 @@ void InitGame(void)
 	//グラデーションの初期化処理
 	InitGradation();
 
-	//flowerの初期化処理
-	InitFlower();
+	//魔法メーターの初期化処理
+	InitMagic();
 
-	//hitpointの初期化処理
+	//体力の初期化処理
 	InitHitPoint();
 
-	PlaySound(SOUND_LABEL_BGM001, false);
+	//タイムの初期化処理
+	InitTime();
+
+	PlaySound(SOUND_LABEL_BGM000);
 
 	g_nCounterGameState = 0;
 }
@@ -140,8 +166,23 @@ void UninitGame(void)
 	// 影の終了処理
 	UninitShadow();
 
+	//バレットの終了処理
+	UninitBullet();
+
+	//魔法陣の終了処理
+	UninitMagician();
+
+	//爆発の終了処理
+	UninitExplosion();
+
 	//フィールドの終了処理
 	UninitMeshField();
+
+	//フィールドの終了処理
+	UninitMeshSphere();
+
+	// ポインタの終了処理
+	UninitPointer();
 
 	// 軌跡の終了処理
 	UninitOrbit();
@@ -152,11 +193,14 @@ void UninitGame(void)
 	// グラデーションの終了処理
 	UninitGradation();
 
-	// flowerの終了処理
-	UninitFlower();
+	//魔法メーターの終了処理
+	UninitMagic();
 
-	//hitpointの終了処理
+	//体力の終了処理
 	UninitHitPoint();
+
+	//タイムの終了処理
+	UninitTime();
 
 }
 
@@ -200,11 +244,23 @@ void UpdateGame(void)
 		// モデルの更新処理
 		UpdatePlayer();
 
+		// 魔法陣の更新処理
+		UpdateMagician();
+
 		// 敵の更新処理
 		UpdateEnemy();
+		
+		// ポインタの更新処理
+		UpdatePointer();
 
 		//エフェクトの更新処理
 		UpdateEffect();
+
+		//バレットの更新処理
+		UpdateBullet();
+
+		//爆発の更新処理
+		UpdateExplosion();
 
 		// 影の更新処理
 		UpdateShadow();
@@ -212,11 +268,9 @@ void UpdateGame(void)
 		// グラデーションの更新処理
 		UpdateGradation();
 
-		// Flowerの更新処理
-		UpdateFlower();
+		// 球体の更新処理
+		UpdateMeshSphere();
 
-		//hitpointの更新処理
-		UpdateHitPoint();
 	}
 
 	//ポーズ切り替え
@@ -235,6 +289,15 @@ void UpdateGame(void)
 	switch (g_gameState)
 	{
 	case GAMESTATE_NORMAL:
+		//魔法メーターの更新処理
+		UpdateMagic();
+
+		//体力の更新処理
+		UpdateHitPoint();
+
+		//タイムの更新処理
+		UpdateTime();
+
 		break;
 	case GAMESTATE_END:
 		g_nCounterGameState++;
@@ -249,6 +312,13 @@ void UpdateGame(void)
 			}
 		}
 		break;
+	case GAMESTATE_STAGECHANGE:
+		if (GetGameFade() == GAMEFADE_NONE)
+		{
+			SetGameFade();
+		}
+		break;
+
 	}
 
 #ifdef _DEBUG
@@ -276,11 +346,17 @@ void DrawGame(void)
 	// 敵の描画処理
 	DrawEnemy();
 
+	//バレットの描画処理
+	DrawBullet();
+
 	// ポリゴンの描画処理
 	DrawPolygon();
 
 	// フィールドの描画処理
 	DrawMeshField();
+
+	//フィールドの描画処理
+	DrawMeshSphere();
 
 	// 壁の描画処理
 	DrawWall();
@@ -288,11 +364,18 @@ void DrawGame(void)
 	// プレイヤーの描画処理
 	DrawPlayer();
 
+	//魔法陣の描画処理
+	DrawMagician();
+
 	// 影の描画処理
 	DrawShadow();
 
 	//チュートリアルの描画処理
 	DrawTutorial();
+
+	if (pPlayer->nAnimationType == MOTIONTYPE_ATTACK_1 || pPlayer->nAnimationType == MOTIONTYPE_ATTACK_2)
+	{
+	}
 
 	//軌跡の描画処理
 	DrawOrbit();
@@ -300,19 +383,28 @@ void DrawGame(void)
 	//エフェクトの描画処理
 	DrawEffect();
 
+	//爆発の描画処理
+	DrawExplosion();
+
+	// ポインタの描画処理
+	DrawPointer();
+
 	/*=======UI========*/
 	if (g_bUseUI == true)
 	{
-		// ダメージの描画処理
-		DrawGradation();
+		//// ダメージの描画処理
+		//DrawGradation();
 
 	}
 
-	// メーター表示
-	DrawFlower();
+	//魔法メーターの描画処理
+	DrawMagic();
 
-	//hitpointの描画処理
+	//体力の描画処理
 	DrawHitPoint();
+
+	//タイムの描画処理
+	DrawTime();
 
 	//テロップの描画処理
 	DrawTelop();

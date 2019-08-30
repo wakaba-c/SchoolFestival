@@ -44,32 +44,19 @@ HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwB
 //=============================================================================
 // グローバル変数
 //=============================================================================
-SOUND g_aSound[SOUND_LABEL_MAX];							// サウンドの音量
 IXAudio2 *g_pXAudio2 = NULL;								// XAudio2オブジェクトへのインターフェイス
-
 IXAudio2MasteringVoice *g_pMasteringVoice = NULL;			// マスターボイス
-IXAudio2SubmixVoice		*g_pSubmixVoice = NULL;
 IXAudio2SourceVoice *g_apSourceVoice[SOUND_LABEL_MAX] = {};	// ソースボイス
-
 BYTE *g_apDataAudio[SOUND_LABEL_MAX] = {};					// オーディオデータ
-
-X3DAUDIO_HANDLE		g_X3DInstance;					// 3Dオーディオインスタンスハンドル
-X3DAUDIO_LISTENER	g_Listener;						// リスナー（聞く）
-X3DAUDIO_EMITTER	g_Emitter;						// エミッター （スピーカー）
-X3DAUDIO_DSP_SETTINGS g_DSPSetting = {};					// 計算結果
-FLOAT32				*matrix;
-XAUDIO2_DEVICE_DETAILS deviceDetails;
-DWORD channelMask;
-
 DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 
 // 各音素材のパラメータ
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 { 
-	{"data/sound/title.wav", -1},		// BGM0
-	{"data/sound/game.wav", -1},		// BGM1
-	{"data/se/jump.wav", 0},		// BGM2
-	{ "data/se/Slash.wav", 0 },		// BGM2
+	{"data/sound/ハッカソンタイトル.wav", -1},		// BGM0
+	{"data/sound/ハッカソンゲーム.wav", -1},		// BGM1
+	{"data/sound/ハッカソンゲームオーバー.wav", -1},// BGM2
+	{"data/sound/発射音.wav", 0 },					// BGM2
 };
 
 //=============================================================================
@@ -113,31 +100,6 @@ HRESULT InitSound(HWND hWnd)
 
 		return E_FAIL;
 	}
-
-	g_pXAudio2->GetDeviceDetails(0, &deviceDetails);
-	channelMask = deviceDetails.OutputFormat.dwChannelMask;
-
-	// 3Dサウンドの初期化
-	X3DAudioInitialize(channelMask,X3DAUDIO_SPEED_OF_SOUND, g_X3DInstance);
-
-	 matrix = new FLOAT32[deviceDetails.OutputFormat.Format.nChannels];
-
-	 // 計算結果の初期化
-	 g_DSPSetting.SrcChannelCount = 1; 
-	 g_DSPSetting.DstChannelCount = deviceDetails.OutputFormat.Format.nChannels;
-	 g_DSPSetting.pMatrixCoefficients = matrix;
-
-	// リスナーの初期化
-	g_Listener = { 0 };
-
-	// エミッターの初期化処理
-	g_Emitter = { 0 };
-	g_Emitter.ChannelCount = 1;
-	g_Emitter.CurveDistanceScaler = FLT_MIN;
-
-	//g_DSPSetting.SrcChannelCount = 1;
-	//g_DSPSetting.DstChannelCount = 6;
-	//g_DSPSetting.pMatrixCoefficients = matrix;
 
 	// サウンドデータの初期化
 	for(nCntSound = 0; nCntSound < SOUND_LABEL_MAX; nCntSound++)
@@ -279,70 +241,12 @@ void UninitSound(void)
 }
 
 //=============================================================================
-// エミッターとリスナーの更新処理
-//=============================================================================
-void UpdateSound(void)
-{
-	XAUDIO2_FILTER_PARAMETERS g_FilterParameters;
-	XAUDIO2_VOICE_USEFILTER;
-
-	for (int nCntSound = 0; nCntSound < SOUND_LABEL_MAX; nCntSound++)
-	{
-		if (g_aSound[nCntSound].bUse)
-		{
-			//エミッターの更新処理
-			g_Emitter.OrientFront = g_aSound[nCntSound].rotation;			//向き
-			g_Emitter.OrientTop = g_aSound[nCntSound].normalize;			//上向き
-			g_Emitter.Position = g_aSound[nCntSound].position;				//位置
-			g_Emitter.Velocity = g_aSound[nCntSound].velocity;				//速度
-
-			//リスナーとエミッターの計算
-			X3DAudioCalculate(g_X3DInstance, &g_Listener, &g_Emitter, X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER, &g_DSPSetting);
-
-			//g_apSourceVoice[nCntSound]->SetOutputMatrix(g_pMasteringVoice, 1, deviceDetails.OutputFormat.Format.nChannels, g_DSPSetting.pMatrixCoefficients);
-			g_apSourceVoice[nCntSound]->SetFrequencyRatio(g_DSPSetting.DopplerFactor);
-			g_apSourceVoice[nCntSound]->SetOutputMatrix(g_pSubmixVoice, 1, deviceDetails.OutputFormat.Format.nChannels, g_DSPSetting.pMatrixCoefficients);
-			g_FilterParameters = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * g_DSPSetting.LPFDirectCoefficient), 1.0f };
-			//g_apSourceVoice[nCntSound]->SetFilterParameters(&g_FilterParameters);
-		}
-	}
-}
-
-//=============================================================================
-// リスナーの更新処理
-//=============================================================================
-void UpdateListener(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 rot, D3DXVECTOR3 nor)
-{
-	g_Listener.OrientFront = rot;
-	g_Listener.OrientTop = nor;
-	g_Listener.Position = pos;
-	g_Listener.Velocity = move;
-}
-
-//=============================================================================
-// エミッターの更新処理
-//=============================================================================
-void UpdateEmitter(SOUND_LABEL label, D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 rot, D3DXVECTOR3 nor)
-{
-	g_aSound[label].rotation = rot;
-	g_aSound[label].normalize = nor;
-	g_aSound[label].position = pos;
-	g_aSound[label].velocity = move;
-}
-
-//=============================================================================
 // セグメント再生(再生中なら停止)
 //=============================================================================
-HRESULT PlaySound(SOUND_LABEL label, bool Stereophonic)
+HRESULT PlaySound(SOUND_LABEL label)
 {
 	XAUDIO2_VOICE_STATE xa2state;
 	XAUDIO2_BUFFER buffer;
-
-	//3Dサウンドの有無
-	if(Stereophonic)
-	{
-		g_aSound[label].bUse = Stereophonic;
-	}
 
 	// バッファの値設定
 	memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
@@ -378,12 +282,6 @@ void StopSound(SOUND_LABEL label)
 {
 	XAUDIO2_VOICE_STATE xa2state;
 
-	//3Dサウンドの有無
-	if (g_aSound[label].bUse)
-	{
-		g_aSound[label].bUse = false;
-	}
-
 	// 状態取得
 	g_apSourceVoice[label]->GetState(&xa2state);
 	if(xa2state.BuffersQueued != 0)
@@ -408,11 +306,6 @@ void StopSound(void)
 		{
 			// 一時停止
 			g_apSourceVoice[nCntSound]->Stop(0);
-			
-			if (g_aSound[nCntSound].bUse)
-			{
-				g_aSound[nCntSound].bUse = false;
-			}
 		}
 	}
 }
@@ -512,21 +405,3 @@ HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwB
 	return S_OK;
 }
 
-//=============================================================================
-// ボリュームの調整
-//=============================================================================
-void SetVolume(SOUND_LABEL label, float fVolume)
-{
-	XAUDIO2_VOICE_STATE xa2state;
-
-	g_aSound[label].SourceVoiceChannelVolumes = fVolume;
-
-	// 状態取得
-	g_apSourceVoice[label]->GetState(&xa2state);
-
-	if (xa2state.BuffersQueued != 0)
-	{ // 再生中
-	  //ボリューム変更
-		g_apSourceVoice[label]->SetChannelVolumes(label, &g_aSound[label].SourceVoiceChannelVolumes);
-	}
-}

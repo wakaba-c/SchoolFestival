@@ -19,6 +19,14 @@
 //=============================================================================
 #define MAX_MODEL	30
 
+#define MAX_LIFE_EFFECT (1)
+
+#define MAX_RANDOM (10)
+
+#define MAX_RATE (20)
+
+#define MAX_BASE (20)
+
 //=============================================================================
 // 構造体定義
 //=============================================================================
@@ -60,7 +68,7 @@ typedef struct
 typedef struct
 {
 	ENEMYMOTION		aMotion[MOTIONENEMY_MAX];				//モーションの構造体
-	D3DXVECTOR3		originPos;							//位置のプリセット
+	D3DXVECTOR3		originPos;								//位置のプリセット
 	D3DXVECTOR3		posEnemy;								//モデルの位置
 	D3DXVECTOR3		posOld;									//プレイヤーの前回の位置
 	D3DXVECTOR3		moveEnemy;								//モデルの移動量

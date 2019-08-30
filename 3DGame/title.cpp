@@ -1,6 +1,6 @@
 //========================================================================================
 //
-// タイトル処理[title.cpp]
+// 基本[title.cpp]
 //
 // Author : masayasu wakita
 // 07/13
@@ -22,7 +22,7 @@
 //========================================================================================
 // マクロ定義
 //========================================================================================
-#define TEXTURE_TITLE_ADD "data/tex/flower.png"
+#define TEXTURE_TITLE_ADD "data/tex/Title.png"
 #define TEXTURE_PRESS_ADD "data/tex/press enter.png"
 #define TEXTURE_START_ADD "data/tex/game start.png"
 #define TEXTURE_SELECT_ADD	"data/tex/select002.png"
@@ -97,7 +97,7 @@ void InitTitle(void)
 
 	SetVertexTitle(3, D3DXVECTOR3(640, 600, 0), g_logo, 400, 100);
 
-	PlaySound(SOUND_LABEL_BGM000, false);
+	PlaySound(SOUND_LABEL_BGM001);
 }
 
 //========================================================================================

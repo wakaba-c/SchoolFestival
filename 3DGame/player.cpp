@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// プレイヤー処理 [player.cpp]
+// モデル処理 [player.cpp]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -9,23 +9,29 @@
 #include "camera.h"
 #include "shadow.h"
 #include "load.h"
+#include "trajectory.h"
 #include "model.h"
+#include "bullet.h"
 #include "controller.h"
 #include "tutorial.h"
 #include "sound.h"
 #include "telop.h"
+#include "pointer.h"
+#include "mouse.h"
+#include "magic.h"
+#include "magician.h"
 
 //=============================================================================
 // マクロ定義
 //=============================================================================
 #define PLAYER_GRAVITY	2
-#define CHANGE_MOTIONFRAME	5
 
 //=============================================================================
 // プロトタイプ宣言
 //=============================================================================
 void AnimationPlayer(void);
 void AnimationSwitch(MOTIONTYPE nType);
+void BulletPos(void);
 float g_fVelocity = 20;
 
 #ifdef _DEBUG
@@ -36,14 +42,14 @@ void DrawPlayerData(void);
 // グローバル変数
 //=============================================================================
 LPDIRECT3DTEXTURE9		g_pTexturePlayer = NULL;		//テクスチャへのポインタ
-PLAYER g_player;									//プレイヤーの構造体
-int g_nMaxPlayer = 15;								//パーツの最大数
-int g_bAnimationPlayer = true;						//アニメーションのプレイ
+PLAYER g_player;										//プレイヤーの構造体
+int g_nMaxPlayer = 15;									//パーツの最大数
+int g_bAnimationPlayer = true;							//アニメーションのプレイ
 
-int g_nCntAttacCombo = 0;							//アタックモーションの派生
+int g_nCntAttacCombo = 0;								//アタックモーションの派生
 
 #ifdef _DEBUG
-LPD3DXFONT			g_pPlayerFont = NULL;			// フォントへのポインタ
+LPD3DXFONT			g_pPlayerFont = NULL;				// フォントへのポインタ
 #endif
 
 //=============================================================================
@@ -57,9 +63,8 @@ void InitPlayer(void)
 	g_player.CurrentFrame = 0;									//現在のフレーム数
 	g_player.CurrentKey = 1;									//現在のキー
 	g_player.nAnimationType = 0;								//現在のアニメーション
-	g_player.nValueH = 0;									//コントローラー
-	g_player.nValueV = 0;									//コントローラー
-
+	g_player.nValueH = 0;										//コントローラー
+	g_player.nValueV = 0;										//コントローラー
 	// 位置・向きの初期設定
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
 	{
@@ -99,15 +104,15 @@ void InitPlayer(void)
 		g_player.aModel[nCntPlayer].rotPlayer = g_player.aModel[nCntPlayer].originRot;
 	}
 
-	g_player.pos = D3DXVECTOR3(0.0f, 0.0f, -250.0f);
+	g_player.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (IsFinish())
 	{
-		g_player.fLife = PLAYER_LIFE;
+		g_player.nLife = PLAYER_LIFE;
 	}
 	else
 	{
-		g_player.fLife = 999;
+		g_player.nLife = 999;
 	}
 	
 	//影の作成
@@ -149,36 +154,47 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	CAMERA *pCamera = GetCamera();
+	POINTER *pPointer;
 
-	// リスナーの更新
-	UpdateListener(g_player.pos, g_player.move, g_player.rot, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	pPointer = GetPointer();
+
+	float fX_Difference;
+	float fY_Difference;
+	float fDifference;
+
+
+	// カーソルとプレイヤーのⅩ座標差分
+	fX_Difference = g_player.pos.x - pPointer->pos.x;
+
+	// カーソルとプレイヤーのＹ座標差分
+	fY_Difference = g_player.pos.y - pPointer->pos.y + 100;
+
+	// カーソルとプレイヤーの一定距離
+	fDifference = sqrtf(fX_Difference * fX_Difference + fY_Difference * fY_Difference);
+
+	CAMERA *pCamera = GetCamera();
+	MAGIC *pMagic = GetMagic();
+
+	if (g_bAnimationPlayer)
+	{
+		AnimationPlayer();
+	}
 
 	if (GetTriggerKeyboard(DIK_8))
 	{
-		g_player.fLife += 1;
+		g_player.nLife += 1;
 	}
 	if (GetTriggerKeyboard(DIK_I))
 	{
-		g_player.fLife += -1;
+		g_player.nLife += -1;
 	}
 
 	g_player.posOld = g_player.pos;
-
 
 	if (GetTelopState() == false)
 	{
 		if (g_player.nAnimationType != MOTIONTYPE_RUNATTACK && g_player.nAnimationType != MOTIONTYPE_ATTACK_1 && g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
 		{
-
-			if (fabs(g_player.move.x) > 2 || fabs(g_player.move.z) > 2)
-			{
-				if (g_player.nAnimationType != MOTIONTYPE_RUN)
-				{
-					AnimationSwitch(MOTIONTYPE_RUN);
-				}
-			}
-
 			//================コントローラー===================//
 			GetJoypadStickLeft(0, &g_player.nValueH, &g_player.nValueV);
 
@@ -189,112 +205,44 @@ void UpdatePlayer(void)
 			g_player.move -= D3DXVECTOR3(sinf(D3DX_PI * 1.0f + pCamera->rot.y) * (1.5f * g_player.nValueV), 0, cosf(D3DX_PI * 1.0f + pCamera->rot.y) * (1.5f * g_player.nValueV));
 			g_player.move += D3DXVECTOR3(sinf(D3DX_PI * 0.5f + pCamera->rot.y) * (1.5f * g_player.nValueH), 0, cosf(D3DX_PI * 0.5f + pCamera->rot.y) * (1.5f * g_player.nValueH));
 
+			if (fabs(g_player.move.x) > 1 || fabs(g_player.move.z) > 1)
+			{
+				if (g_player.nAnimationType != MOTIONTYPE_RUN)
+				{
+					AnimationSwitch(MOTIONTYPE_RUN);
+				}
+			}
+
 			//左右操作
-			if (GetKeyboardPress(DIK_LEFTARROW))
+			if (GetKeyboardPress(DIK_A))
 			{
-				//if (g_player.nAnimationType != MOTIONTYPE_RUN)
-				//{
-				//	AnimationSwitch(MOTIONTYPE_RUN);
-				//}
-
-				if (GetKeyboardPress(DIK_UPARROW))
+				if (g_player.nAnimationType != MOTIONTYPE_RUN)
 				{
-					g_player.move.x += sinf(-D3DX_PI * 0.25f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = D3DX_PI * 0.75f + pCamera->rot.y;
-					pCamera->nCount = 0;
+					AnimationSwitch(MOTIONTYPE_RUN);
 				}
-				else if (GetKeyboardPress(DIK_DOWNARROW))
-				{
-					g_player.move.x += sinf(-D3DX_PI * 0.75f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = D3DX_PI * 0.25f + pCamera->rot.y;
-					pCamera->nCount = 0;
-				}
-				else
-				{
-					g_player.move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
-					pCamera->nCount = 0;
-				}
-			}
-
-			else if (GetKeyboardPress(DIK_RIGHTARROW))
-			{
-				//if (g_player.nAnimationType != MOTIONTYPE_RUN)
-				//{
-				//	AnimationSwitch(MOTIONTYPE_RUN);
-				//}
-
-				//上下操作
-				if (GetKeyboardPress(DIK_UPARROW))
-				{
-					g_player.move.x += sinf(D3DX_PI * 0.25f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = -D3DX_PI * 0.75f + pCamera->rot.y;
-					pCamera->nCount = 0;
-				}
-				else if (GetKeyboardPress(DIK_DOWNARROW))
-				{
-					g_player.move.x += sinf(D3DX_PI * 0.75f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = -D3DX_PI * 0.25f + pCamera->rot.y;
-					pCamera->nCount = 0;
-				}
-				else
-				{
-					g_player.move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-					g_player.move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-					g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
-					pCamera->nCount = 0;
-				}
-			}
-
-			//上下操作
-			else if (GetKeyboardPress(DIK_UPARROW))
-			{
-				//if (g_player.nAnimationType != MOTIONTYPE_RUN)
-				//{
-				//	AnimationSwitch(MOTIONTYPE_RUN);
-				//}
-
-				g_player.move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * 1.0f;
-				g_player.move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * 1.0f;
-				g_player.dest.y = D3DX_PI * 1.0f + pCamera->rot.y;
-				pCamera->nCount = 0;
-			}
-			else if (GetKeyboardPress(DIK_DOWNARROW))
-			{
-				//if (g_player.nAnimationType != MOTIONTYPE_RUN)
-				//{
-				//	AnimationSwitch(MOTIONTYPE_RUN);
-				//}
-
-				g_player.move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * 1.0f;
-				g_player.move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * 1.0f;
-				g_player.dest.y = D3DX_PI * 0.0f + pCamera->rot.y;
+				g_player.move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+				g_player.move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+				//g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
 				pCamera->nCount = 0;
 			}
 
-			if (GetTriggerKeyboard(DIK_C) || GetControllerTrigger(0, JOYPADKEY_RIGHT_SHOULDER))
-			{
-				g_player.nAnimationType = MOTIONTYPE_RUNATTACK;
-				g_player.CurrentKey = 0;
-				g_player.CurrentFrame = 0;
-
-				g_player.move.x -= sinf(g_player.rot.y) * 25.0f;
-				g_player.move.z -= cosf(g_player.rot.y) * 25.0f;
-				pCamera->nCount = 0;
-			}
 			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
 			{
-				PlaySound(SOUND_LABEL_SE_SLASH, false);
-				//g_player.nAnimationType = MOTIONTYPE_ATTACK_1;
-				//g_player.CurrentKey = 0;
-				//g_player.CurrentFrame = 0;
+				g_player.nAnimationType = MOTIONTYPE_ATTACK_1;
+				g_player.CurrentKey = 0;
+				g_player.CurrentFrame = 0;
+			}
 
-				AnimationSwitch(MOTIONTYPE_ATTACK_1);
+			else if (GetKeyboardPress(DIK_D))
+			{
+				if (g_player.nAnimationType != MOTIONTYPE_RUN)
+				{
+					AnimationSwitch(MOTIONTYPE_RUN);
+				}
+				g_player.move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+				g_player.move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+				//g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
+				pCamera->nCount = 0;
 			}
 		}
 
@@ -302,16 +250,29 @@ void UpdatePlayer(void)
 		{
 			if (g_player.bJump == false)
 			{
-				PlaySound(SOUND_LABEL_SE_JUMP, false);
 				g_player.bJump = true;
 				g_player.move.y += g_fVelocity;
 			}
 		}
-	}
+		//魔力があるとき
+		if (pMagic->fNowMagic > 0)
+		{
+			if (GetMousePressTrigger(0))
+			{
+				BulletPos();
+			}
+		}
+		if (g_player.pos.x >= pPointer->pos.x)
+		{
+			g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
+		}
+		else if (g_player.pos.x <= pPointer->pos.x)
+		{
+			g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
+			g_player.aModel[2].originRot.x = (float)atan2(fX_Difference, fY_Difference) * -1;
+		}
 
-	if (g_bAnimationPlayer)
-	{
-		AnimationPlayer();
+		g_player.aModel[2].originRot.z = 1.57f;
 	}
 
 	//座標の移動
@@ -341,28 +302,6 @@ void UpdatePlayer(void)
 	else if (g_player.rot.y > D3DX_PI)
 	{
 		g_player.rot.y -= D3DX_PI * 2;
-	}
-
-
-	if (g_player.pos.z < -500)
-	{
-		g_player.pos.z = -500;
-		g_player.move.z = 0;
-	}
-	else if (g_player.pos.z > 500)
-	{
-		g_player.pos.z = 500;
-		g_player.move.z = 0;
-	}
-	if (g_player.pos.x < -500)
-	{
-		g_player.pos.x = -500;
-		g_player.move.x = 0;
-	}
-	else if (g_player.pos.x > 500)
-	{
-		g_player.pos.x = 500;
-		g_player.move.x = 0;
 	}
 
 	if (GetTriggerKeyboard(DIK_F5))
@@ -498,16 +437,15 @@ void AnimationPlayer(void)
 		g_player.nAnimationType = 0;
 	}
 
-	if (GetTriggerKeyboard(DIK_3))
-	{
-		g_player.nAnimationType = MOTIONTYPE_DAMAGE;
-	}
-
 	//最初のフレームの時
 	if (g_player.CurrentFrame == 0)
 	{
 		for (int nCntMotion = 0; nCntMotion < g_nMaxPlayer; nCntMotion++)
 		{
+			//// 位置・向きの初期設定
+			//g_player.aModel[nCntMotion].posPlayer = g_player.aModel[nCntMotion].originPos;
+			//g_player.aModel[nCntMotion].rotPlayer = g_player.aModel[nCntMotion].originRot;
+
 			//posの計算((目標のkey + プリセットの配置) - 現在のキー)
 			g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentPos.x = ((g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].aKey[g_player.CurrentKey].pos.x + g_player.aModel[nCntMotion].originPos.x) - g_player.aModel[nCntMotion].posPlayer.x) / g_player.aModel[0].aMotion[g_player.nAnimationType].aKey[g_player.CurrentKey].nFrame;
 			g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentPos.y = ((g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].aKey[g_player.CurrentKey].pos.y + g_player.aModel[nCntMotion].originPos.y) - g_player.aModel[nCntMotion].posPlayer.y) / g_player.aModel[0].aMotion[g_player.nAnimationType].aKey[g_player.CurrentKey].nFrame;
@@ -525,11 +463,14 @@ void AnimationPlayer(void)
 	{
 		for (int nCntMotion = 0; nCntMotion < g_nMaxPlayer; nCntMotion++)
 		{
-			//rotの移動
-			g_player.aModel[nCntMotion].rotPlayer += g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentRot;
+			if (nCntMotion != 2)
+			{
+				//rotの移動
+				g_player.aModel[nCntMotion].rotPlayer += g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentRot;
 
-			//posの移動
-			g_player.aModel[nCntMotion].posPlayer += g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentPos;
+				//posの移動
+				g_player.aModel[nCntMotion].posPlayer += g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].CurrentPos;
+			}
 		}
 	}
 
@@ -552,11 +493,11 @@ void AnimationPlayer(void)
 		//攻撃の派生
 		if (g_player.nAnimationType == MOTIONTYPE_ATTACK_1)
 		{
+			//チャンスタイム
 			g_nCntAttacCombo++;
 
 			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
 			{
-				PlaySound(SOUND_LABEL_SE_SLASH, false);
 				g_player.nAnimationType = MOTIONTYPE_ATTACK_2;
 				g_player.CurrentKey = 0;
 				g_player.CurrentFrame = 0;
@@ -575,53 +516,22 @@ void AnimationPlayer(void)
 		else
 		{
 			//ループするかどうか
-			if (g_player.aModel[0].aMotion[g_player.nAnimationType].nLoop)
+			if (!g_player.aModel[0].aMotion[g_player.nAnimationType].nLoop)
 			{
+				g_player.nAnimationType = MOTIONTYPE_NEUTRAL;
+				g_player.CurrentFrame = 0;
+
 				//キーのリセット
 				g_player.CurrentKey = 0;
-				g_player.CurrentFrame = 0;
-			}
-			//まだ歩いている場合
-			else if (fabs(g_player.move.x) > 2 || fabs(g_player.move.z) > 2)
-			{
-				//キーのリセット
-				g_player.CurrentKey = 0;
-				g_player.CurrentFrame = 0;
 			}
 			else
 			{
-				//ニュートラルモーション
-				AnimationSwitch(MOTIONTYPE_NEUTRAL);
-				g_player.CurrentFrame = 0;
-
 				//キーのリセット
 				g_player.CurrentKey = 0;
+				g_player.CurrentFrame = 0;
 			}
 		}
 	}
-	//else
-	//{
-	//	if (g_player.nAnimationType != MOTIONTYPE_ATTACK_1 || g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
-	//	{
-
-	//	}
-	//	else if (fabs(g_player.move.x) > 2 || fabs(g_player.move.z) > 2)
-	//	{
-
-	//	}
-	//	else
-	//	{
-	//		if (!g_player.nAnimationType == MOTIONTYPE_NEUTRAL)
-	//		{
-	//			//ニュートラルモーション
-	//			AnimationSwitch(MOTIONTYPE_NEUTRAL);
-	//			g_player.CurrentFrame = 0;
-
-	//			//キーのリセット
-	//			g_player.CurrentKey = 0;
-	//		}
-	//	}
-	//}
 }
 
 //=============================================================================
@@ -629,29 +539,22 @@ void AnimationPlayer(void)
 //=============================================================================
 void AnimationSwitch(MOTIONTYPE nType)
 {
-	if (g_player.nAnimationType != MOTIONTYPE_ATTACK_1 || g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
-	{
-		if (g_player.nAnimationType != nType)
-		{
-			g_player.nAnimationType = nType;
-			g_player.CurrentKey = 0;
-			g_player.CurrentFrame = 0;
+	g_player.nAnimationType = nType;
+	g_player.CurrentKey = 0;
+	g_player.CurrentFrame = 0;
 
-			for (int nCntMotion = 0; nCntMotion < g_nMaxPlayer; nCntMotion++)
-			{
-				// 位置・向きの初期設定
-				g_player.aModel[nCntMotion].posPlayer = g_player.aModel[nCntMotion].originPos;
-				g_player.aModel[nCntMotion].rotPlayer = g_player.aModel[nCntMotion].originRot;
-
-				//rotの移動
-				g_player.aModel[nCntMotion].rotPlayer = g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].aKey[1].rot;
-
-				//posの移動
-				g_player.aModel[nCntMotion].posPlayer += (g_player.aModel[nCntMotion].aMotion[g_player.nAnimationType].aKey[g_player.CurrentKey].pos + g_player.aModel[nCntMotion].originPos) - g_player.aModel[nCntMotion].posPlayer;
-
-			}
-		}
-	}
+	//switch (nType)
+	//{
+	//case MOTIONTYPE_NEUTRAL:
+	//	g_nAnimationType = MOTIONTYPE_NEUTRAL;
+	//	g_CurrentKey = 0;
+	//	g_CurrentFrame = 0;
+	//	break;
+	//case MOTIONTYPE_ATTACK:
+	//	break;
+	//case MOTIONTYPE_RUN:
+	//	break;
+	//}
 }
 
 
@@ -684,7 +587,7 @@ void DrawPlayerData(void)
 	sprintf(&sData[0], "パーツ数 : %d\n", g_nMaxPlayer);
 	strcat(&sAnimation[0], &sData[0]);
 
-	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.fLife);
+	sprintf(&sData[0], "プレイヤー体力 : %d\n", g_player.nLife);
 	strcat(&sAnimation[0], &sData[0]);
 
 	for (int nCntAnimation = 0; nCntAnimation < g_nMaxPlayer; nCntAnimation++)
@@ -713,3 +616,41 @@ void DrawPlayerData(void)
 	g_pPlayerFont->DrawText(NULL, &sAnimation[0], -1, &rect, DT_LEFT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 }
 #endif
+
+//=============================================================================
+// 弾の位置
+//=============================================================================
+void BulletPos(void)
+{
+	CAMERA *pCamera = GetCamera();
+
+	POINTER *pPointer;
+
+	pPointer = GetPointer();
+
+	float fX_Difference;
+	float fY_Difference;
+	float fDifference;
+
+
+	// カーソルとプレイヤーのⅩ座標差分
+	fX_Difference = g_player.pos.x - pPointer->pos.x;
+
+	// カーソルとプレイヤーのＹ座標差分
+	fY_Difference = g_player.pos.y - pPointer->pos.y + 25;
+
+	// カーソルとプレイヤーの一定距離
+	fDifference = sqrtf(fX_Difference * fX_Difference + fY_Difference * fY_Difference);
+
+	// カーソルの方を向かせる
+	g_player.rot.y = (float)atan2(fX_Difference, fY_Difference);
+
+	//g_player.rot.y -= pCamera->rot.y;
+
+	PlaySound(SOUND_LABEL_SE_AIM);
+	SetBullet(D3DXVECTOR3(g_player.pos.x, g_player.pos.y + 25, g_player.pos.z),
+			D3DXVECTOR3(sinf(g_player.rot.y + D3DX_PI) * 10.0f, cosf(g_player.rot.y + D3DX_PI) * 10.0f,0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),BULLETTYPE_PLAYER);
+
+	SetMagician(g_player.pos);
+
+}

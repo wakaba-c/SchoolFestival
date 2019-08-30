@@ -1,11 +1,15 @@
 //========================================================================================
 //
-// モデル[model.h]
+// polygon基礎[bg.h]
+//
 // Author : masayasu wakita
+// 07/18
 //
 //========================================================================================
 #ifndef _MODEL_H_
 #define _MODEL_H_
+
+#define	STAGE_FILE		"data/stage.txt"				// 読み込むステージファイル名
 
 //========================================================================================
 // インクルードファイル
@@ -37,11 +41,9 @@ typedef enum
 typedef enum
 {
 	ITEMTYPE_NONE = -1,
-	ITEMTYPE_DESK,
-	ITEMTYPE_CHAIR,
-	ITEMTYPE_FLOWER,
-	ITEMTYPE_STAIRS,
-	ITEMTYPE_COMPO,
+	ITEMTYPE_CLOUD_1,
+	ITEMTYPE_CLOUD_2,
+	ITEMTYPE_CLOUD_3,
 	ITEMTYPE_MAX
 } ITEMTYPE;
 
@@ -53,10 +55,13 @@ void UninitModel(void);
 void UpdateModel(void);
 void DrawModel(void);
 
-void SetModel(int nType, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+void SetModel(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, ITEMTYPE nType, int nCntMax);
 bool CollisionModel(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pMove);
 bool SphereModel(COLLISIONTYPE  nType,D3DXVECTOR3 *C1, D3DXVECTOR3 *C2, D3DXVECTOR3 *M1, D3DXVECTOR3 *M2, float R1, float R2);
 
-void SetLayout(LAYOUTTYPE nType);
-void ChangeModel(void);
+//void SetLayout(LAYOUTTYPE nType);
+//void ChangeModel(void);
+
+bool SetStage(int nStageNo);
+
 #endif

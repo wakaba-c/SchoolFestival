@@ -1,12 +1,13 @@
 //=============================================================================
 //
 // メイン処理 [main.cpp]
-// Author : masayasu wakita
+// Author : 
 //
 //=============================================================================
 #include "main.h"
 #include "input.h"
 #include "fade.h"
+#include "mouse.h"
 #include "title.h"
 #include "game.h"
 #include "result.h"
@@ -23,7 +24,7 @@
 // マクロ定義
 //=============================================================================
 #define CLASS_NAME		"WindowClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"Flower"	// ウインドウのキャプション名
+#define WINDOW_NAME		"SkyMagician"	// ウインドウのキャプション名
 
 //=============================================================================
 // 構造体定義
@@ -70,7 +71,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		hInstance,
 		//アイコンの変更
 		LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),
-		LoadCursor(NULL, IDC_ARROW),
+		LoadCursor(NULL, NULL),
 		(HBRUSH)(COLOR_WINDOW + 1),
 		NULL,
 		CLASS_NAME,
@@ -280,7 +281,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// レンダーステートパラメータの設定
 	g_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// 裏面(左回り)をカリングする
 	g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);						// Zバッファを使用
-	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);						// ライティングモード有効
+	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);						// ライティングモード有効   //bullet
 	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);				// αブレンドを行う
 	g_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// αソースカラーの指定
 	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// αデスティネーションカラーの指定
@@ -302,6 +303,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "ＭＳ ゴシック", &g_pFont);
 #endif
 
+	// マウスカーソルの削除
 	ShowCursor(false);
 
 	//サウンドの初期化処理
@@ -309,6 +311,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	//キーボードの初期化処理
 	InitKeyboard(hInstance, hWnd);
+
+	//マウスの初期化処理
+	InitMouse(hInstance, hWnd);
 
 	//コントローラー
 	InitController(hInstance, hWnd);
@@ -350,6 +355,9 @@ void Uninit(void)
 
 	// キーボードの終了処理
 	UninitKeyboard();
+
+	//マウスの終了処理
+	UninitMouse();
 
 	// コントローラーの終了処理
 	UninitController();
@@ -406,14 +414,14 @@ void Update(void)
 	// コントローラ更新処理
 	UpdateController();
 
+	// マウスの更新処理
+	UpdateMouse();
+
 	//ライトの終了処理
 	UpdateLight();
 
 	// モデルの更新処理
 	UpdateModel();
-
-	//カメラの終了より
-	UpdateCamera();
 
 	switch (g_mode)
 	{
@@ -431,8 +439,8 @@ void Update(void)
 		break;
 	}
 
-	//サウンドの更新処理
-	UpdateSound();
+	//カメラの終了より
+	UpdateCamera();
 
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスの取得
 
@@ -453,7 +461,7 @@ void Update(void)
 void Draw(void)
 {
 	// バックバッファ＆Ｚバッファのクリア
-	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
+	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(137, 189, 222, 0), 1.0f, 0);
 
 	// 描画の開始
 	if(SUCCEEDED(g_pD3DDevice->BeginScene()))
@@ -584,7 +592,7 @@ void SetMode(MODE mode)
 	}
 
 	//モデルの配置換え
-	ChangeModel();
+	//ChangeModel();
 
 	//カメラの初期化
 	InitCamera();

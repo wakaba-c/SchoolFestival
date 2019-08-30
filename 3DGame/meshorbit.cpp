@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// 軌跡処理 [meshorbit.cpp]
+// ポリゴン処理 [meshorbit.cpp]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -229,7 +229,7 @@ void DrawOrbit(void)
 			D3DXMatrixTranslation(&mtxMeshTrans, g_aMtxMeshOrbit.pos.x, g_aMtxMeshOrbit.pos.y, g_aMtxMeshOrbit.pos.z);
 			D3DXMatrixMultiply(&g_mtxWorldWeapon, &g_mtxWorldWeapon, &mtxMeshTrans);
 
-			D3DXMatrixMultiply(&g_mtxWorldWeapon, &g_mtxWorldWeapon, &pPlayer->aModel[14].mtxWorldPlayer);
+			D3DXMatrixMultiply(&g_mtxWorldWeapon, &g_mtxWorldWeapon, &pPlayer->aModel[3].mtxWorldPlayer);
 
 			// ワールドマトリックスの設定
 			pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorldMeshOrbit);
@@ -357,7 +357,7 @@ void SetOrbit(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 					pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 					//頂点カラー
-					pVtx[0].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f - nWide * (1.0f / ORBIT_WIDE));
+					pVtx[0].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f);
 
 					//テクスチャ描写の位置
 					pVtx[0].tex = D3DXVECTOR2(1.0f * nWide, 1.0f * nDepth);
@@ -410,4 +410,12 @@ void SetOrbit(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 D3DXMATRIX *GetOrbit(void)
 {
 	return &g_mtxWorldWeapon;
+}
+
+//=============================================================================
+// 軌跡の手持ち側
+//=============================================================================
+D3DXMATRIX *GetHand(void)
+{
+	return &g_mtxWorldMeshOrbit;
 }

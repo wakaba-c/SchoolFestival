@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // メイン処理 [main.h]
-// Author : masayasu wakita
+// Author : 
 //
 //=============================================================================
 #ifndef _MAIN_H_
@@ -18,8 +18,7 @@
 
 #define DIRECTINPUT_VERSION (0x0800)	// 警告対処用
 #include "dinput.h"
-#include "XAudio2.h"
-#include "X3DAudio.h"
+#include "xaudio2.h"
 
 //=============================================================================
 // ライブラリのリンク
@@ -29,7 +28,6 @@
 #pragma comment (lib, "dxguid.lib")
 #pragma comment (lib, "winmm.lib")
 #pragma comment (lib, "dinput8.lib")
-#pragma comment (lib, "XAudio2.lib")
 
 //=============================================================================
 // マクロ定義

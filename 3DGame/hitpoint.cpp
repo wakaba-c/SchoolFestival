@@ -12,11 +12,12 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define TEXTURE_ADD_HPbar	"data/tex/HPbar.png"		//読み込むテクスチャファイル名
-#define TEXTURE_ADD_HPframe "data/tex/HPFrame.png"		//読み込むテクスチャファイル名
-#define MAX_HITPOINT (2)									//テクスチャ枚数
+#define TEXTURE_ADD_HPbar	"data/tex/HPバー白.png"		//読み込むテクスチャファイル名
+#define TEXTURE_ADD_HPframe "data/tex/HPバー黒.png"		//読み込むテクスチャファイル名
+#define TEXTURE_ADD_HP		"data/tex/HP.png"			//読み込むテクスチャファイル名
+#define MAX_HITPOINT (3)									//テクスチャ枚数
 #define MAX_WIDTH (700.0f)									//画像の幅の最大値
-#define MAX_HEIGHT (70.0f)									//画像の高さの最大値
+#define MAX_HEIGHT (35.0f)									//画像の高さの最大値
 
 //=============================================================================
 // プロトタイプ宣言
@@ -37,13 +38,14 @@ void InitHitPoint(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 	PLAYER *pPlayer = GetPlayer();
 	
-	g_HitPoint.fMaxHp = pPlayer->fLife;
+	g_HitPoint.fMaxHp = (float)pPlayer->nLife;
 	g_HitPoint.fNowHp = g_HitPoint.fMaxHp;
 	g_HitPoint.fWidth = MAX_WIDTH;
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice, TEXTURE_ADD_HPbar, &g_pTextureHITPOINT[0]);
 	D3DXCreateTextureFromFile(pDevice, TEXTURE_ADD_HPframe, &g_pTextureHITPOINT[1]);
+	D3DXCreateTextureFromFile(pDevice, TEXTURE_ADD_HP, &g_pTextureHITPOINT[2]);
 
 	// 頂点情報の作成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_HITPOINT,
@@ -54,9 +56,11 @@ void InitHitPoint(void)
 		NULL);
 
 	//テクスチャ設定
-	SetVertexHitPoint(0, D3DXVECTOR3(100, 630, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexHitPoint(0, D3DXVECTOR3(55, 15, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
 
-	SetVertexHitPoint(1, D3DXVECTOR3(100, 630, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexHitPoint(1, D3DXVECTOR3(50, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+
+	SetVertexHitPoint(2, D3DXVECTOR3(20, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
 
 }
 //=============================================================================
@@ -92,19 +96,12 @@ void UpdateHitPoint(void)
 	float NowHP;
 	float fWidth;																	//現在の画像の幅
 
-	g_HitPoint.fNowHp = pPlayer->fLife;												//現在のHP
+	g_HitPoint.fNowHp = (float)pPlayer->nLife;												//現在のHP
 
 	NowHP = g_HitPoint.fNowHp / g_HitPoint.fMaxHp;									//HPの比率計算
 	fWidth = NowHP * g_HitPoint.fWidth;												//描画すべき画像幅がいくらなのか
 
-	if (NowHP < 0.25f)
-	{
-		SetVertexHitPoint(0, D3DXVECTOR3(100, 630, 0), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), fWidth, MAX_HEIGHT);
-	}
-	else
-	{
-		SetVertexHitPoint(0, D3DXVECTOR3(100, 630, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), fWidth, MAX_HEIGHT);
-	}
+	SetVertexHitPoint(0, D3DXVECTOR3(55, 15, 0), D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), fWidth, MAX_HEIGHT);
 }
 //=============================================================================
 // 描画処理
@@ -151,8 +148,8 @@ void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, 
 	//頂点座標の設定(基準のx座標 + 間隔 * nCntScore (+ 幅), 基準のy座標)
 	pVtx[0].pos = D3DXVECTOR3(pos.x, pos.y, 0);
 	pVtx[1].pos = D3DXVECTOR3(pos.x + fWidth, pos.y, 0);
-	pVtx[2].pos = D3DXVECTOR3(pos.x, pos.y + fHeight, 0);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth, pos.y + fHeight, 0);
+	pVtx[2].pos = D3DXVECTOR3(pos.x + 5, pos.y + fHeight, 0);
+	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth + 5, pos.y + fHeight, 0);
 
 	//1.0で固定
 	pVtx[0].rhw = 1.0f;
@@ -180,7 +177,7 @@ void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, 
 //=============================================================================
 // 体力の取得
 //=============================================================================
-HITPOINT GetHitPoint(void)
+HITPOINT *GetHitPoint(void)
 {
-	return g_HitPoint;
+	return &g_HitPoint;
 }

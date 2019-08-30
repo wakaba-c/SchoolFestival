@@ -1,7 +1,9 @@
 //========================================================================================
 //
-// リザルト処理[result.cpp]
+// 基本[result.cpp]
+//
 // Author : masayasu wakita
+// 07/13
 //
 //========================================================================================
 #include "input.h"
@@ -62,7 +64,7 @@ void InitResult(void)
 	// フィールドの初期化処理
 	InitMeshField();
 
-	PlaySound(SOUND_LABEL_BGM000, false);
+	PlaySound(SOUND_LABEL_SE_GAMEOVER);
 }
 
 //========================================================================================
@@ -126,7 +128,7 @@ void UpdateResult(void)
 	{
 		if (GetFade() == FADE_NONE)
 		{
-			SetFade(MODE_TITLE);
+			SetFade(MODE_RANKING);
 		}
 	}
 }

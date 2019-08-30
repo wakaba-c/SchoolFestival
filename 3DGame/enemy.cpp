@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// 敵処理 [enemy.cpp]
+// モデル処理 [enemy.cpp]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -8,7 +8,9 @@
 #include "input.h"
 #include "camera.h"
 #include "shadow.h"
+#include "bullet.h"
 #include "load.h"
+#include "trajectory.h"
 #include "model.h"
 #include "player.h"
 #include "meshorbit.h"
@@ -16,6 +18,9 @@
 #include "result.h"
 #include "tutorial.h"
 #include "telop.h"
+#include "bullet.h"
+#include "time.h"
+#include "effect.h"
 
 //=============================================================================
 // マクロ定義
@@ -37,8 +42,16 @@ LPDIRECT3DTEXTURE9		g_pTextureEnemy = NULL;		//テクスチャへのポインタ
 ENEMY g_aEnemy[MAX_ENEMY];										//プレイヤーの構造体
 ENEMYPARTS g_aEnemyParts[30];						//partsの構造体
 int g_nMaxEnemy = 15;								//パーツの最大数
-
-int g_nNumber;									//敵の人数
+D3DXVECTOR3				g_EffectPos;
+D3DXVECTOR3				g_EffectPos1;
+D3DXVECTOR3				g_EffectPos2;
+D3DXVECTOR3				g_EffectPos3;
+D3DXVECTOR3				g_EffectPos4;
+D3DXVECTOR3				g_EffectPos5;
+D3DXVECTOR3				g_EffectPos6;
+D3DXVECTOR3				g_EffectPos7;
+D3DXVECTOR3				g_EffectPos8; 
+int g_Number = 3;									//敵の人数
 
 //=============================================================================
 // 初期化処理
@@ -46,7 +59,15 @@ int g_nNumber;									//敵の人数
 void InitEnemy(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
+	g_EffectPos = D3DXVECTOR3(0.0f, 20.0f, 0.0f);
+	g_EffectPos1 = D3DXVECTOR3(10.0f, 20.0f, 0.0f);
+	g_EffectPos2 = D3DXVECTOR3(-10.0f, 20.0f, 0.0f);
+	g_EffectPos3 = D3DXVECTOR3(-15.0f, 20.0f, 0.0f);
+	g_EffectPos4 = D3DXVECTOR3(15.0f, 20.0f, 0.0f);
+	g_EffectPos5 = D3DXVECTOR3(0.0f, 20.0f, 10.0f);
+	g_EffectPos6 = D3DXVECTOR3(0.0f, 20.0f, 15.0f);
+	g_EffectPos7 = D3DXVECTOR3(0.0f, 20.0f, -15.0f);
+	g_EffectPos8 = D3DXVECTOR3(0.0f, 20.0f, -10.0f);
 	for (int nCntModel = 0; nCntModel < MAX_ENEMY; nCntModel++)
 	{
 		// 位置・向きの初期設定
@@ -61,12 +82,10 @@ void InitEnemy(void)
 
 			g_aEnemy[nCntModel].CurrentEnemyFrame = 0;								//現在のフレーム数
 			g_aEnemy[nCntModel].CurrentEnemyKey = 0;								//現在のキー
-			g_aEnemy[nCntModel].nAnimationEnemy = 0;							//現在のアニメーション
+			g_aEnemy[nCntModel].nAnimationEnemy = 0;								//現在のアニメーション
 			g_aEnemy[nCntModel].nCntAttack = 0;
 		}
 	}
-
-	g_nNumber = 3;
 
 	//スクリプトの読み込み
 	g_nMaxEnemy = LoadEnemy();
@@ -90,7 +109,7 @@ void InitEnemy(void)
 
 	if (GetMode() == MODE_GAME && IsFinish())
 	{
-		SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 25);
+		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 7);
 
 		//SetEnemy(D3DXVECTOR3(00.0f, 0.0f, 100.0f), 25);
 
@@ -126,7 +145,12 @@ void UninitEnemy(void)
 //=============================================================================
 void UpdateEnemy(void)
 {
+	float fAngle = 0;
+	float fAngle1 = 0;
+	float fSpeed = 2.5;
+
 	PLAYER *pPlayer = GetPlayer();
+	BULLET *pBullet = GetBullet();
 
 	float fDifference_x;
 	float fDifference_z;
@@ -149,72 +173,291 @@ void UpdateEnemy(void)
 
 			AnimationEnemy(fDifference);
 
-			//敵が攻撃中かどうか
-			if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_1)
+
+			//敵の当たり判定
+			if (pBullet->pos.x < g_aEnemy[nCntEnemy].pos.x - 10.0f &&
+				pBullet->pos.x > g_aEnemy[nCntEnemy].pos.x + 10.0f &&
+				pBullet->pos.z < g_aEnemy[nCntEnemy].pos.z + 40.0f &&
+				pBullet->pos.z > g_aEnemy[nCntEnemy].pos.z)
 			{
-				//敵が範囲内に入ってきたかどうか
-				if (fDifference < 200.0f && fDifference > 50)
-				{
-					if (pPlayer->pos.x >= g_aEnemy[nCntEnemy].pos.x - 1.0f)
-					{
-						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONTYPE_RUN)
-						{
-							g_aEnemy[nCntEnemy].nAnimationEnemy = (MOTIONTYPE_RUN);
-						}
+				g_aEnemy[nCntEnemy].nLife -= 5;
 
-						g_aEnemy[nCntEnemy].pos.x = g_aEnemy[nCntEnemy].pos.x + 1.0f;
-						g_aEnemy[nCntEnemy].rot.y = atan2f(fDifference_x, fDifference_z);
-					}
-					else if (pPlayer->pos.x <= g_aEnemy[nCntEnemy].pos.x + 1.0f)
-					{
-						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONTYPE_RUN)
-						{
-							g_aEnemy[nCntEnemy].nAnimationEnemy = (MOTIONTYPE_RUN);
-						}
-						g_aEnemy[nCntEnemy].pos.x = g_aEnemy[nCntEnemy].pos.x - 1.0f;
-						g_aEnemy[nCntEnemy].rot.y = atan2f(fDifference_x, fDifference_z);
-					}
-					if (pPlayer->pos.z <= g_aEnemy[nCntEnemy].pos.z + 1.0f)
-					{
-						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONTYPE_RUN)
-						{
-							g_aEnemy[nCntEnemy].nAnimationEnemy = (MOTIONTYPE_RUN);
-						}
-						g_aEnemy[nCntEnemy].pos.z = g_aEnemy[nCntEnemy].pos.z - 1.0f;
-						g_aEnemy[nCntEnemy].rot.y = atan2f(fDifference_x, fDifference_z);
-					}
-					else if (pPlayer->pos.z >= g_aEnemy[nCntEnemy].pos.z - 1.0f)
-					{
-						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONTYPE_RUN)
-						{
-							g_aEnemy[nCntEnemy].nAnimationEnemy = (MOTIONTYPE_RUN);
-						}
-						g_aEnemy[nCntEnemy].pos.z = g_aEnemy[nCntEnemy].pos.z + 1.0f;
-						g_aEnemy[nCntEnemy].rot.y = atan2f(fDifference_x, fDifference_z);
-					}
-				}
-
-				//クールタイムを終えているかどうか
-				if (g_aEnemy[nCntEnemy].nWait >= 100)
+				if (g_aEnemy[nCntEnemy].nLife <= 0)
 				{
-					if (fDifference < 50)
+					g_aEnemy[nCntEnemy].bUse = false;
+					DeleteShadow(g_aEnemy[nCntEnemy].nIdxShadow);
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
 					{
-						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_1)
-						{
-							g_aEnemy[nCntEnemy].nAnimationEnemy = MOTIONENEMY_ATTACK_1;
-							g_aEnemy[nCntEnemy].CurrentEnemyFrame = 0;
-							g_aEnemy[nCntEnemy].CurrentEnemyKey = 0;
-							g_aEnemy[nCntEnemy].nWait = 0;
-						}
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
 					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos5, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos5, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos5, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos6, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos6, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos6, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize1 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos1, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize1 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos7, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize = rand() % 10 + 10;
+						float fSize2 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos2, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos8, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize1 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos8, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos4, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos4, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize = rand() % 10 + 10;
+						float fSize3 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % 2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(nMoveX, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						float fSize = rand() % 10 + 10;
+						float nMoveY = rand() % 2;
+						float nMoveX = rand() % -2;
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(-0.5, nMoveY, 0);
+						SetEffect(pPlayer->pos + g_EffectPos3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+					for (int nCnt = 0; nCnt < MAX_LIFE_EFFECT; nCnt++)
+					{
+						int nLife = (rand() % MAX_RANDOM) * MAX_RATE + MAX_BASE;
+						float fSize = rand() % 10 + 10;
+						float fSize4 = rand() % 10 + 1;
+						fAngle = float(rand() % 314) / 100.0f - float(rand() % 314) / 100.0f;
+						fAngle1 = 3.57f * nCnt;
+						D3DXVECTOR3 move = D3DXVECTOR3(0, 0.5f, 0);
+						SetEffect(pPlayer->pos + g_EffectPos4, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), move, fSize, nLife, EFFECTTYPE_LIFE);
+					}
+
 				}
 			}
-
 			//モデルの当たり判定
 			CollisionModel(&g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].posOld, &g_aEnemy[nCntEnemy].move);
 
 			//当たり判定
-			SphereModel(COLLISIONTYPE_NORMAL , &g_aEnemy[nCntEnemy].pos, &pPlayer->pos, &g_aEnemy[nCntEnemy].move, &pPlayer->move, 20, 20);
+			if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].move, &pPlayer->move, 10, 10))
+			{
+				g_aEnemy[nCntEnemy].nLife -= 1;
+			}
 			
 			//敵が攻撃を受けているかどうか
 			if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_DAMAGE)
@@ -234,7 +477,7 @@ void UpdateEnemy(void)
 				//プレイヤーの攻撃方法が通常攻撃だった時
 				if (pPlayer->nAnimationType == MOTIONTYPE_ATTACK_1)
 				{
-					if (SphereModel(COLLISIONTYPE_WEAPON, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &g_aEnemy[nCntEnemy].pos, &pPlayer->move, &g_aEnemy[nCntEnemy].move, 20, 20))
+					if (SphereModel(COLLISIONTYPE_WEAPON, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &g_aEnemy[nCntEnemy].pos, &pPlayer->move, &g_aEnemy[nCntEnemy].move, 5, 5))
 					{
 						g_aEnemy[nCntEnemy].nLife -= 3;
 						g_aEnemy[nCntEnemy].nCntAttack = 0;
@@ -245,7 +488,7 @@ void UpdateEnemy(void)
 				//プレイヤーの攻撃方法が通常攻撃だった時
 				if (pPlayer->nAnimationType == MOTIONTYPE_ATTACK_2)
 				{
-					if (SphereModel(COLLISIONTYPE_WEAPON, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &g_aEnemy[nCntEnemy].pos, &pPlayer->move, &g_aEnemy[nCntEnemy].move, 20, 20))
+					if (SphereModel(COLLISIONTYPE_WEAPON, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &g_aEnemy[nCntEnemy].pos, &pPlayer->move, &g_aEnemy[nCntEnemy].move, 5, 5))
 					{
 						g_aEnemy[nCntEnemy].nLife -= 5;
 						g_aEnemy[nCntEnemy].nCntAttack = 0;
@@ -261,7 +504,7 @@ void UpdateEnemy(void)
 
 					if (CollisionExtinction(-1))
 					{
-						SetModel(ITEMTYPE_FLOWER, g_aEnemy[nCntEnemy].pos, g_aEnemy[nCntEnemy].rot);
+						//SetModel(ITEMTYPE_CLOUD_3, g_aEnemy[nCntEnemy].pos, g_aEnemy[nCntEnemy].rot);
 					}
 				}
 			}
@@ -275,11 +518,11 @@ void UpdateEnemy(void)
 					//当たり判定
 					if (SphereModel(COLLISIONTYPE_WEAPON, &g_aEnemy[nCntEnemy].pos, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &pPlayer->move, &g_aEnemy[nCntEnemy].move, 50, 50))
 					{
-						pPlayer->fLife -= 3;
+						pPlayer->nLife -= 3;
 						pPlayer->nAnimationType = MOTIONTYPE_DAMAGE;
 
 						//プレイヤーの体力が0になった時
-						if (pPlayer->fLife <= 0)
+						if (pPlayer->nLife <= 0)
 						{
 							SetGameState(GAMESTATE_END);
 							SetResultState(RESULTSTATE_FAILD);
@@ -291,6 +534,12 @@ void UpdateEnemy(void)
 			//影の位置を設定
 			SetPositionShadow(g_aEnemy[nCntEnemy].nIdxShadow, g_aEnemy[nCntEnemy].pos);
 		}
+	}
+
+	//当たり判定
+	if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &pPlayer->pos, &pPlayer->move, &pPlayer->move, 10, 10))
+	{
+		pPlayer->nLife -= 1;
 	}
 }
 
@@ -360,6 +609,9 @@ void DrawEnemy(void)
 
 				for (int nCntMat = 0; nCntMat < (int)g_aEnemyParts[nCntModel].nNumMatEnemy; nCntMat++)
 				{
+					//色
+					pMat[nCntMat].MatD3D.Diffuse = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
@@ -508,20 +760,20 @@ ENEMY *GetEnemy(void)
 bool CollisionExtinction(int nNum)
 {
 	bool bDispersion = false;
-	g_nNumber += nNum;
+	g_Number += nNum;
 
-	if (g_nNumber <= 0)
+	if (g_Number <= 0)
 	{
 		SetStageTelop(TELOPTYPE_MESSAGEWINDOW, TELOPPAGE_END);
 		bDispersion = true;
 	}
 	else
 	{
-		if (g_nNumber == 2)
+		if (g_Number == 2)
 		{
 			SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 25);
 		}
-		else if (g_nNumber == 1)
+		else if (g_Number == 1)
 		{
 			SetEnemy(D3DXVECTOR3(-100.0f, 0.0f, 100.0f), 25);
 		}

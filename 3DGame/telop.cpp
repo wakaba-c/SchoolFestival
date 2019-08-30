@@ -1,6 +1,7 @@
 //========================================================================================
 //
-// メッセージボックス[telop.cpp]
+// 基本[telop.cpp]
+//
 // Author : masayasu wakita
 //
 //========================================================================================
@@ -145,6 +146,7 @@ void UpdateTelop(void)
 					if (!g_bDrowTelopStart)
 					{
 						g_bDrowTelopStart = true;
+						SetStageTelop(TELOPTYPE_DETAILS, TELOPPAGE_PHASE1);
 					}
 				}
 			}
