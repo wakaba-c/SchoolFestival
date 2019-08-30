@@ -1,7 +1,9 @@
 //========================================================================================
 //
-// アニメーションロード基本[load.cpp]
+// 基本[load.cpp]
+//
 // Author : masayasu wakita
+// 07/13
 //
 //========================================================================================
 #include "load.h"
@@ -49,7 +51,7 @@ int LoadModel(void)
 	pPlayer = GetPlayer();
 
 	//テキストデータロード
-	pFile = fopen("data/motion.txt", "r");
+	pFile = fopen("data/motionModel7.txt", "r");
 
 	if (pFile != NULL)
 	{
@@ -312,7 +314,7 @@ int LoadEnemy(void)
 	pEnemy = GetEnemy();
 
 	//テキストデータロード
-	pFile = fopen("data/motion.txt", "r");
+	pFile = fopen("data/motionModel7.txt", "r");
 
 	if (pFile != NULL)
 	{

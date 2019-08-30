@@ -30,5 +30,5 @@ void UninitHitPoint(void);
 void UpdateHitPoint(void);
 void DrawHitPoint(void);
 void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);
-HITPOINT GetHitPoint(void);
+HITPOINT *GetHitPoint(void);
 #endif

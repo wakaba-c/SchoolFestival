@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// ポリゴンメッシュ処理 [polygon.cpp]
+// ポリゴン処理 [polygon.cpp]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -25,6 +25,8 @@ LPDIRECT3DTEXTURE9		g_pTextureMeshField = NULL;			//テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffMeshField = NULL;			//頂点バッファへのポインタ
 LPDIRECT3DINDEXBUFFER9	g_pIdxBuffMeshField = NULL;			//インデックスバッファへのポインタ
 
+D3DXVECTOR2				g_tex;
+
 D3DXVECTOR3				g_posMeshField;						//ポリゴンの位置
 D3DXVECTOR3				g_rotMeshField;						//ポリゴンの向き(回転)
 D3DXMATRIX				g_mtxWorldMeshField;				//ワールドマトリックス
@@ -41,6 +43,8 @@ void InitMeshField(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスの取得
 	WORD *pIdx;									//インデックスデータへポインタ
 
+	g_tex = D3DXVECTOR2(1.0f, 1.0f);
+
 												// 位置・回転の初期設定
 	g_posMeshField = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	g_rotMeshField = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -55,7 +59,7 @@ void InitMeshField(void)
 	g_nNumPolygonMeshField = DEPTH * WIDE * 2 + 4 * (DEPTH - 1);
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/tex/wood_Seamless.jpg", &g_pTextureMeshField);
+	D3DXCreateTextureFromFile(pDevice, "data/tex/FOG.png", &g_pTextureMeshField);
 
 	// 頂点情報の作成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (DEPTH + 1) * (WIDE + 1), D3DUSAGE_WRITEONLY, FVF_VERTEX_3D, D3DPOOL_MANAGED, &g_pVtxBuffMeshField, NULL);
@@ -153,7 +157,6 @@ void UninitMeshField(void)
 //=============================================================================
 void UpdateMeshField(void)
 {
-
 }
 
 //=============================================================================

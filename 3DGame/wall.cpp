@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// 壁処理 [wall.cpp]
+// ポリゴン処理 [wall.cpp]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -74,14 +74,14 @@ void InitWall (void)
 	}
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/tex/dam.jp", &g_pTextureWall);
+	D3DXCreateTextureFromFile(pDevice, "data/tex/FOG.png", &g_pTextureWall);
 
 	//MakeVertexWall(pDevice);
 
-	SetWall(D3DXVECTOR3(-500.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0));
-	SetWall(D3DXVECTOR3(500.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f));
-	SetWall(D3DXVECTOR3(0.0f, 0.0f, -500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
-	SetWall(D3DXVECTOR3(500.0f, 0.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//SetWall(D3DXVECTOR3(-500.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0));
+	//SetWall(D3DXVECTOR3(500.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f));
+	//SetWall(D3DXVECTOR3(0.0f, 0.0f, -500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+	//SetWall(D3DXVECTOR3(500.0f, 0.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }
 
 //=============================================================================

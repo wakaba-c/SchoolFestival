@@ -1,0 +1,180 @@
+// ----------------------------------------------------------------------------
+// 
+// ブロックスクリプト[stage.txt]
+//  Author : Ryouma Inoue
+// 
+// ----------------------------------------------------------------------------
+SCRIPT
+
+// ----------------------------------------------------------------------------
+// 表示ブロック配置
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+// ブロック0配置
+// ----------------------------------------------------------------------------
+
+BLOCKSET
+	pos = -850,60,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = -1050,60,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = -950,140,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = -950,40,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 850,60,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1050,60,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 950,140,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 950,40,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1400,40,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1540,70,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1650,90,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1750,95,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 2050,100,0
+	move = 1,0,0
+	rot = 0,0,0
+	CountMax = 60
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 2050,30,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 60
+	type = 0
+END_BLOCKSET
+
+BLOCKSET
+	pos = 2200,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 60
+	type = 0
+END_BLOCKSET
+
+// ----------------------------------------------------------------------------
+// ブロック1配置
+// ----------------------------------------------------------------------------
+BLOCKSET
+	pos = -700,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+BLOCKSET
+	pos = -1150,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+BLOCKSET
+	pos = 700,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1150,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+BLOCKSET
+	pos = 1900,150,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+END_SCRIPT

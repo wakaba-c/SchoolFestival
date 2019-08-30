@@ -1,6 +1,6 @@
 //========================================================================================
 //
-// チュートリアルメッセージ[Tutorial.cpp]
+// 基本[Tutorial.cpp]
 //
 // Author : masayasu wakita
 //
@@ -18,7 +18,7 @@
 //========================================================================================
 #define TEXTURE_BG_ADD "data/tex/School_library.jpg"
 #define TEXTURE_TUTORIAL_ADD "data/tex/MessageWindow2.png"
-#define TEXTURE_MESSAGE_ADD "data/tex/Message.png"
+#define TEXTURE_MESSAGE_ADD "data/tex/テロップコメントチュートリアル.png"
 #define MAX_TUTORIAL 2
 
 //========================================================================================
@@ -122,7 +122,7 @@ void UpdateTutorial(void)
 		if (g_nCountPage == 4)
 		{
 			SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 999);
-			SetLayout(LAYOUTTYPE_NONE);
+			//SetLayout(LAYOUTTYPE_NONE);
 		}
 
 		if (g_nCountPage == 5)

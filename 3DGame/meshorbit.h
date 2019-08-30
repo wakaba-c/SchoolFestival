@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// ‹OÕˆ— [meshorbit.h]
+// ƒ|ƒŠƒSƒ“ˆ— [meshorbit.h]
 // Author : masayasu wakita
 //
 //=============================================================================
@@ -27,4 +27,5 @@ void UpdateOrbit(void);
 void DrawOrbit(void);
 void SetOrbit(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 D3DXMATRIX *GetOrbit(void);
+D3DXMATRIX *GetHand(void);
 #endif

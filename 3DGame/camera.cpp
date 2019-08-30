@@ -12,6 +12,7 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
+#define DISTANCE -350						//距離
 
 //=============================================================================
 // プロトタイプ宣言
@@ -48,15 +49,15 @@ void InitCamera(void)
 
 	g_camera.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	g_camera.rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	g_camera.posV = D3DXVECTOR3(0.0f, 0.0f, 500.0f);
-	g_camera.posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_camera.posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				//視点
+	g_camera.posR = D3DXVECTOR3(0.0f, 0.0f, DISTANCE);					//注視点
 	g_camera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 	originPos = g_camera.posR - g_camera.posV;
 
-	g_originPos = D3DXVECTOR3(710.0f, 80.0f, -250.0f);
+	//g_originPos = D3DXVECTOR3(710.0f, 80.0f, -250.0f);
 	g_resultPos = D3DXVECTOR3(0.0f, 80.0f, 0.0f);
-	g_camera.fDistonce = sqrtf(originPos.y * originPos.y + originPos.z * originPos.z + 50);
+	g_camera.fDistonce = sqrtf(originPos.y * originPos.y + originPos.z * originPos.z);
 }
 
 //=============================================================================
@@ -124,12 +125,12 @@ void UpdateCamera(void)
 
 		//g_camera.rot.y += (g_camera.rotDest.y - g_camera.rot.y) * 0.02f;
 
-		g_camera.posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.x;
-		g_camera.posRDest.y = pPlayer->move.y + 80;
+		g_camera.posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.x + 100;
+		g_camera.posRDest.y = pPlayer->pos.y + 50;
 		g_camera.posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.z;
 
 		g_camera.posVDest.x = pPlayer->pos.x + sinf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce + pPlayer->move.x;
-		g_camera.posVDest.y = 240;
+		g_camera.posVDest.y = pPlayer->pos.y + 50;
 		g_camera.posVDest.z = pPlayer->pos.z + cosf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce + pPlayer->move.z;
 
 		g_camera.posV += (g_camera.posVDest - g_camera.posV) * 0.2f;
@@ -191,23 +192,6 @@ void UpdateCamera(void)
 		g_camera.rot.y -= D3DX_PI * 2;
 	}
 
-	if (g_camera.posV.x < -490)
-	{
-		g_camera.posV.x = -490;
-	}
-	else if (g_camera.posV.x > 490)
-	{
-		g_camera.posV.x = 490;
-	}
-
-	if (g_camera.posV.z < -490)
-	{
-		g_camera.posV.z = -490;
-	}
-	else if (g_camera.posV.z > 490)
-	{
-		g_camera.posV.z = 490;
-	}
 }
 
 //=============================================================================

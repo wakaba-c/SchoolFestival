@@ -20,8 +20,11 @@ LPDIRECTINPUTDEVICE8 g_pDevKeyboard = NULL;	//入力デバイス(キーボード)へのポイン
 BYTE g_aKeyState[NUM_KEY_MAX];				//キーボードの入力情報ワーク
 BYTE g_akeyStateTrigger[NUM_KEY_MAX];		//弾の1発撃ち
 BYTE g_akeyStateUp[NUM_KEY_MAX];		//弾の1発撃ち(離した)
+//BYTE g_aXInputTrigger[NUM_KEY_MAX];			//コントローラーの1発撃ち
 BYTE g_akeyStateRelese[NUM_KEY_MAX];		//弾の溜めうち
 BYTE g_akeyStateRepeat[NUM_KEY_MAX];		//弾の再連射
+//XINPUT_STATE g_pState;						//XInputコントローラー
+//XINPUT_KEYSTROKE g_pKeystroke;
 
 //=============================================================================
 // キーボードの初期化
