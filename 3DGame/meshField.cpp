@@ -157,6 +157,7 @@ void UninitMeshField(void)
 //=============================================================================
 void UpdateMeshField(void)
 {
+
 }
 
 //=============================================================================
@@ -193,8 +194,8 @@ void DrawMeshField(void)
 	//頂点フォーマットの設定
 	pDevice->SetTexture(0, g_pTextureMeshField);
 
-	// ポリゴンの描画
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, g_nNumVertexMeshField, 0, g_nNumPolygonMeshField);
+	//// ポリゴンの描画
+	//pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, g_nNumVertexMeshField, 0, g_nNumPolygonMeshField);
 
 	//頂点フォーマットの設定
 	pDevice->SetTexture(0, NULL);
