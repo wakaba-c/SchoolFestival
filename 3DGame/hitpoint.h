@@ -20,6 +20,9 @@ typedef struct
 	float fMaxHp;									//HPの最大値
 	float fNowHp;									//現在のHP
 	float fWidth;									//画像の幅の最大値
+	float fMaxHpEnemy;								//HPの最大値
+	float fNowHpEnemy;								//現在のHP
+	float fWidthEnemy;								//画像の幅の最大値
 } HITPOINT;
 
 //========================================================================================
@@ -29,6 +32,6 @@ void InitHitPoint(void);
 void UninitHitPoint(void);
 void UpdateHitPoint(void);
 void DrawHitPoint(void);
-void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);
+void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight, float rot);
 HITPOINT *GetHitPoint(void);
 #endif

@@ -112,7 +112,7 @@ void UpdateMagic(void)
 	NowMagic = g_Magic.fNowMagic / g_Magic.fMaxMagic;									//–‚—Í‚Ì”ä—¦ŒvZ
 	fWidth = NowMagic * g_Magic.fWidth;													//•`‰æ‚·‚×‚«‰æ‘œ•‚ª‚¢‚­‚ç‚È‚Ì‚©
 
-	SetVertexMagic(0, D3DXVECTOR3(55, 50, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
+	SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
 }
 //=============================================================================
 // •`‰æˆ—
