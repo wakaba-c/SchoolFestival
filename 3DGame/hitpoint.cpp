@@ -20,7 +20,7 @@
 #define MAX_WIDTH (500.0f)									//画像の幅の最大値
 #define MAX_HEIGHT (27.0f)									//画像の高さの最大値
 #define PLAYER_POS D3DXVECTOR3(50, 20, 0)					//Playerバーの位置
-#define ENEMY_POS D3DXVECTOR3(700, 20, 0)					//Enemyバーの位置
+#define ENEMY_POS D3DXVECTOR3(1200, 20, 0)					//Enemyバーの位置
 
 //=============================================================================
 // プロトタイプ宣言
@@ -67,14 +67,14 @@ void InitHitPoint(void)
 
 	//テクスチャ設定
 	//Player1の体力
-	SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT, 0);
-	SetVertexHitPoint(1, D3DXVECTOR3(50, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f, 0);
-	SetVertexHitPoint(2, D3DXVECTOR3(20, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30, 0);
+	SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexHitPoint(1, D3DXVECTOR3(50, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f);
+	SetVertexHitPoint(2, D3DXVECTOR3(20, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
 
 	//Player2の体力
-	SetVertexHitPoint(3, ENEMY_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT, 0.25f);
-	SetVertexHitPoint(4, D3DXVECTOR3(700, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f, 0);
-	SetVertexHitPoint(5, D3DXVECTOR3(1180, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30, 0);
+	SetVertexHitPoint1(3, ENEMY_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexHitPoint1(4, D3DXVECTOR3(1200, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f);
+	SetVertexHitPoint(5, D3DXVECTOR3(1180, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
 }
 //=============================================================================
 // 終了処理
@@ -129,21 +129,21 @@ void UpdateHitPoint(void)
 	//Playerの体力半分以上
 	if (NowHP > 0.5f)
 	{
-		SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), fWidth, MAX_HEIGHT, 0);
+		SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(0.0f + fResidue * 2, 1.0f, 0.25f - (fResidue / 2), 1.0f), fWidth, MAX_HEIGHT);
 	}
 	else
 	{
-		SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(1.0f, NowHP * 2, 0.0f, 1.0f), fWidth, MAX_HEIGHT, 0);
+		SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(1.0f, NowHP * 2, 0.0f, 1.0f), fWidth, MAX_HEIGHT);
 	}
 
 	//Enemyの体力半分以上
 	if (NowHpEnemy > 0.5f)
 	{
-		SetVertexHitPoint(3, ENEMY_POS, D3DXCOLOR(0.0f + fResidueEnemy * 2, 1.0f, 0.25f - (fResidueEnemy / 2), 1.0f), fWidthEnemy, MAX_HEIGHT, 0.25f);
+		SetVertexHitPoint1(3, ENEMY_POS, D3DXCOLOR(0.0f + fResidueEnemy * 2, 1.0f, 0.25f - (fResidueEnemy / 2), 1.0f), fWidthEnemy, MAX_HEIGHT);
 	}
 	else
 	{
-		SetVertexHitPoint(3, ENEMY_POS, D3DXCOLOR(1.0f, NowHpEnemy * 2, 0.0f, 1.0f), fWidthEnemy, MAX_HEIGHT, 0.25f);
+		SetVertexHitPoint1(3, ENEMY_POS, D3DXCOLOR(1.0f, NowHpEnemy * 2, 0.0f, 1.0f), fWidthEnemy, MAX_HEIGHT);
 	}
 }
 //=============================================================================
@@ -170,15 +170,13 @@ void DrawHitPoint(void)
 
 		//ポリゴン描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTex * 4, 2);
-
 	}
-
 }
 
 //=============================================================================
 // 頂点の設定
 //=============================================================================
-void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight, float rot)
+void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight)
 {
 	VERTEX_2D *pVtx;										//頂点情報へのポインタ
 
@@ -189,10 +187,51 @@ void SetVertexHitPoint(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, 
 
 	// 頂点情報の設定
 	//頂点座標の設定(基準のx座標 + 間隔 * nCntScore (+ 幅), 基準のy座標)
-	pVtx[0].pos = D3DXVECTOR3(pos.x + sinf(-D3DX_PI * 0.75f + rot), pos.y + cosf(-D3DX_PI * 0.75f + rot), 0);
-	pVtx[1].pos = D3DXVECTOR3(pos.x + fWidth + sinf(D3DX_PI * 0.75f + rot), pos.y + cosf(D3DX_PI * 0.75f + rot), 0);
-	pVtx[2].pos = D3DXVECTOR3(pos.x + sinf(-D3DX_PI * 0.25f + rot), pos.y + fHeight + cosf(-D3DX_PI * 0.25f + rot), 0);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth + sinf(D3DX_PI * 0.25f + rot), pos.y + fHeight + cosf(D3DX_PI * 0.25f + rot), 0);
+	pVtx[0].pos = D3DXVECTOR3(pos.x, pos.y, 0);
+	pVtx[1].pos = D3DXVECTOR3(pos.x + fWidth, pos.y, 0);
+	pVtx[2].pos = D3DXVECTOR3(pos.x, pos.y + fHeight, 0);
+	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth, pos.y + fHeight, 0);
+
+	//1.0で固定
+	pVtx[0].rhw = 1.0f;
+	pVtx[1].rhw = 1.0f;
+	pVtx[2].rhw = 1.0f;
+	pVtx[3].rhw = 1.0f;
+
+	//カラーチャートの設定
+	pVtx[0].col = col;
+	pVtx[1].col = col;
+	pVtx[2].col = col;
+	pVtx[3].col = col;
+
+	//テクスチャ描写の位置
+	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	//頂点データのアンロック
+	g_pVtxBuffHITPOINT->Unlock();
+}
+
+//=============================================================================
+// 頂点の設定
+//=============================================================================
+void SetVertexHitPoint1(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight)
+{
+	VERTEX_2D *pVtx;										//頂点情報へのポインタ
+
+	//頂点データの範囲をロックし、頂点バッファへのポインタを取得
+	g_pVtxBuffHITPOINT->Lock(0, 0, (void**)&pVtx, 0);
+
+	pVtx += index * 4;					//頂点を4つずつ加算
+
+	// 頂点情報の設定
+	//頂点座標の設定(基準のx座標 + 間隔 * nCntScore (+ 幅), 基準のy座標)
+	pVtx[0].pos = D3DXVECTOR3(pos.x - fWidth, pos.y, 0);
+	pVtx[1].pos = D3DXVECTOR3(pos.x, pos.y, 0);
+	pVtx[2].pos = D3DXVECTOR3(pos.x - fWidth, pos.y + fHeight, 0);
+	pVtx[3].pos = D3DXVECTOR3(pos.x, pos.y + fHeight, 0);
 
 	//1.0で固定
 	pVtx[0].rhw = 1.0f;
