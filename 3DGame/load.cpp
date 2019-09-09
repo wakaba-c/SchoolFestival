@@ -51,7 +51,7 @@ int LoadModel(void)
 	pPlayer = GetPlayer();
 
 	//テキストデータロード
-	pFile = fopen("data/motionModel7.txt", "r");
+	pFile = fopen("data/motion_TEAM.txt", "r");
 
 	if (pFile != NULL)
 	{
@@ -314,7 +314,7 @@ int LoadEnemy(void)
 	pEnemy = GetEnemy();
 
 	//テキストデータロード
-	pFile = fopen("data/motionModel7.txt", "r");
+	pFile = fopen("data/motion_TEAMENEMY.txt", "r");
 
 	if (pFile != NULL)
 	{

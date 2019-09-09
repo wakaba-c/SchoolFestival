@@ -62,7 +62,7 @@ void InitPlayer(void)
 	g_player.bJump = false;
 	g_player.CurrentFrame = 0;									//現在のフレーム数
 	g_player.CurrentKey = 1;									//現在のキー
-	g_player.nAnimationType = 0;								//現在のアニメーション
+	g_player.nAnimationType = 1;								//現在のアニメーション
 	g_player.nValueH = 0;										//コントローラー
 	g_player.nValueV = 0;										//コントローラー
 	// 位置・向きの初期設定
@@ -82,6 +82,12 @@ void InitPlayer(void)
 	//スクリプトの読み込み
 	g_nMaxPlayer = LoadModel();
 
+	// 位置・向きの初期設定
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	{
+		g_player.aModel[nCntPlayer].posPlayer = g_player.aModel[nCntPlayer].originPos;
+		g_player.aModel[nCntPlayer].rotPlayer = g_player.aModel[nCntPlayer].originRot;
+	}
 	//LoadMaya();
 
 	for (int nCntPlayer = 0; nCntPlayer < g_nMaxPlayer; nCntPlayer++)
@@ -96,13 +102,6 @@ void InitPlayer(void)
 	//	g_player.aModel[nCntPlayer].posPlayer = g_player.aModel[nCntPlayer].originPos + g_player.aModel[nCntPlayer].aMotion[g_nAnimationType].aKey[0].pos;
 	//	g_player.aModel[nCntPlayer].rotPlayer = g_player.aModel[nCntPlayer].originRot + g_player.aModel[nCntPlayer].aMotion[g_nAnimationType].aKey[0].rot;
 	//}
-
-	// 位置・向きの初期設定
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
-	{
-		g_player.aModel[nCntPlayer].posPlayer = g_player.aModel[nCntPlayer].originPos;
-		g_player.aModel[nCntPlayer].rotPlayer = g_player.aModel[nCntPlayer].originRot;
-	}
 
 	g_player.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
