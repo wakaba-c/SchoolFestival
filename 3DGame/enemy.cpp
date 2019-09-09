@@ -110,7 +110,7 @@ void InitEnemy(void)
 
 	if (GetMode() == MODE_GAME && IsFinish())
 	{
-		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 7);
+		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 25);
 
 		//SetEnemy(D3DXVECTOR3(00.0f, 0.0f, 100.0f), 25);
 

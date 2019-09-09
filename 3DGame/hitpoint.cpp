@@ -17,10 +17,11 @@
 #define TEXTURE_ADD_HPframe "data/tex/HPバー黒.png"			//読み込むテクスチャファイル名
 #define TEXTURE_ADD_HP		"data/tex/HP.png"				//読み込むテクスチャファイル名
 #define MAX_HITPOINT (6)									//テクスチャ枚数
-#define MAX_WIDTH (500.0f)									//画像の幅の最大値
+#define MAX_WIDTH (465.0f)									//画像の幅の最大値
 #define MAX_HEIGHT (27.0f)									//画像の高さの最大値
-#define PLAYER_POS D3DXVECTOR3(50, 20, 0)					//Playerバーの位置
-#define ENEMY_POS D3DXVECTOR3(1200, 20, 0)					//Enemyバーの位置
+#define PLAYER_POS D3DXVECTOR3(70, 20, 0)					//Playerバーの位置
+#define ENEMY_POS D3DXVECTOR3(1185, 20, 0)					//Enemyバーの位置
+#define NORMAL_COLOR D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)		//普通の色
 
 //=============================================================================
 // プロトタイプ宣言
@@ -68,13 +69,13 @@ void InitHitPoint(void)
 	//テクスチャ設定
 	//Player1の体力
 	SetVertexHitPoint(0, PLAYER_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
-	SetVertexHitPoint(1, D3DXVECTOR3(50, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f);
-	SetVertexHitPoint(2, D3DXVECTOR3(20, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
+	SetVertexHitPoint(1, D3DXVECTOR3(50, 15, 0), NORMAL_COLOR, 505.0f, MAX_HEIGHT + 8.0f);
+	SetVertexHitPoint(2, D3DXVECTOR3(20, 15, 0), NORMAL_COLOR, 40, 30);
 
 	//Player2の体力
 	SetVertexHitPoint1(3, ENEMY_POS, D3DXCOLOR(0.0f, 1.0f, 0.25f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
-	SetVertexHitPoint1(4, D3DXVECTOR3(1200, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 5.0f, 35.0f);
-	SetVertexHitPoint(5, D3DXVECTOR3(1180, 15, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
+	SetVertexHitPoint1(4, D3DXVECTOR3(1200, 15, 0), NORMAL_COLOR, 505.0f, MAX_HEIGHT + 8.0f);
+	SetVertexHitPoint(5, D3DXVECTOR3(1180, 15, 0), NORMAL_COLOR, 40, 30);
 }
 //=============================================================================
 // 終了処理
