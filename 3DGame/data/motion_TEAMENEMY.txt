@@ -57,7 +57,6 @@ CHARACTERSET
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
-
 	PARTSSET
 		INDEX = 3					# 右手
 		PARENT = 1					# (親)右前腕

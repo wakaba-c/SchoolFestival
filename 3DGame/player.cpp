@@ -71,6 +71,8 @@ void InitPlayer(void)
 		g_player.aModel[nCntPlayer].posPlayer = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_player.aModel[nCntPlayer].movePlayer = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_player.aModel[nCntPlayer].rotPlayer = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_player.aModel[nCntPlayer].originPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_player.aModel[nCntPlayer].originRot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	}
 
 #ifdef _DEBUG
