@@ -83,19 +83,19 @@ void InitModel(void)
 	}
 	
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/踏み台.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_1].pBuffMatModel,
+	D3DXLoadMeshFromX("data/model/cloud1.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_1].pBuffMatModel,
 		NULL,
 		&g_aModel[ITEMTYPE_CLOUD_1].nNumMatModel,
 		&g_aModel[ITEMTYPE_CLOUD_1].pMeshModel);
 
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/踏み台.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_2].pBuffMatModel,
+	D3DXLoadMeshFromX("data/model/cloud4.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_2].pBuffMatModel,
 		NULL,
 		&g_aModel[ITEMTYPE_CLOUD_2].nNumMatModel,
 		&g_aModel[ITEMTYPE_CLOUD_2].pMeshModel);
 
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/踏み台.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_3].pBuffMatModel,
+	D3DXLoadMeshFromX("data/model/cloud3.x", D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_aModel[ITEMTYPE_CLOUD_3].pBuffMatModel,
 		NULL,
 		&g_aModel[ITEMTYPE_CLOUD_3].nNumMatModel,
 		&g_aModel[ITEMTYPE_CLOUD_3].pMeshModel);
