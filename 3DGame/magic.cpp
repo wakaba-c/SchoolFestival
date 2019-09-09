@@ -17,8 +17,8 @@
 #define TEXTURE_ADD_MagicFrame "data/tex/HPバー黒.png"		//読み込むテクスチャファイル名
 #define TEXTURE_ADD_MP			"data/tex/MP.png"			//読み込むテクスチャファイル名
 #define MAX_MAGIC (3)											//テクスチャ枚数
-#define MAX_WIDTH (700.0f)										//画像の幅の最大値
-#define MAX_HEIGHT (35.0f)										//画像の高さの最大値
+#define MAX_WIDTH (500.0f)										//画像の幅の最大値
+#define MAX_HEIGHT (27.0f)										//画像の高さの最大値
 
 //=============================================================================
 // プロトタイプ宣言
@@ -56,9 +56,9 @@ void InitMagic(void)
 		NULL);
 
 	//テクスチャ設定
-	SetVertexMagic(0, D3DXVECTOR3(55, 50, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
 
-	SetVertexMagic(1, D3DXVECTOR3(50, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	SetVertexMagic(1, D3DXVECTOR3(50, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 10.0f, 35.0f);
 
 	SetVertexMagic(2, D3DXVECTOR3(20, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
 
@@ -112,7 +112,7 @@ void UpdateMagic(void)
 	NowMagic = g_Magic.fNowMagic / g_Magic.fMaxMagic;									//魔力の比率計算
 	fWidth = NowMagic * g_Magic.fWidth;													//描画すべき画像幅がいくらなのか
 
-	SetVertexMagic(0, D3DXVECTOR3(55, 50, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
+	SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
 }
 //=============================================================================
 // 描画処理
@@ -159,8 +159,8 @@ void SetVertexMagic(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, flo
 	//頂点座標の設定(基準のx座標 + 間隔 * nCntScore (+ 幅), 基準のy座標)
 	pVtx[0].pos = D3DXVECTOR3(pos.x, pos.y, 0);
 	pVtx[1].pos = D3DXVECTOR3(pos.x + fWidth, pos.y, 0);
-	pVtx[2].pos = D3DXVECTOR3(pos.x + 5, pos.y + fHeight, 0);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth + 5, pos.y + fHeight, 0);
+	pVtx[2].pos = D3DXVECTOR3(pos.x, pos.y + fHeight, 0);
+	pVtx[3].pos = D3DXVECTOR3(pos.x + fWidth, pos.y + fHeight, 0);
 
 	//1.0で固定
 	pVtx[0].rhw = 1.0f;
