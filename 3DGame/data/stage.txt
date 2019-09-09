@@ -130,6 +130,14 @@ END_BLOCKSET
 // ブロック1配置
 // ----------------------------------------------------------------------------
 BLOCKSET
+	pos = 0,20,0
+	move = 0,0,0
+	rot = 0,0,0
+	CountMax = 0
+	type = 1
+END_BLOCKSET
+
+BLOCKSET
 	pos = -1150,20,0
 	move = 0,0,0
 	rot = 0,0,0

@@ -26,8 +26,7 @@
 // マクロ定義
 //=============================================================================
 #define PLAYER_GRAVITY 2
-#define MAX_ENEMY	1
-#define MAX_LIFE 30
+#define MAX_ENEMY	5
 
 //=============================================================================
 // プロトタイプ宣言
@@ -74,7 +73,7 @@ void InitEnemy(void)
 		// 位置・向きの初期設定
 		for (int nCntEnemy = 0; nCntEnemy < MAX_MODEL; nCntEnemy++)
 		{
-			g_aEnemy[nCntModel].nLife = MAX_LIFE;
+			g_aEnemy[nCntModel].nLife = 0;
 			g_aEnemy[nCntModel].aModel[nCntEnemy].posEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			g_aEnemy[nCntModel].aModel[nCntEnemy].moveEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			g_aEnemy[nCntModel].aModel[nCntEnemy].rotEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -110,7 +109,7 @@ void InitEnemy(void)
 
 	if (GetMode() == MODE_GAME && IsFinish())
 	{
-		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 25);
+		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 7);
 
 		//SetEnemy(D3DXVECTOR3(00.0f, 0.0f, 100.0f), 25);
 
@@ -159,15 +158,6 @@ void UpdateEnemy(void)
 
 	for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 	{
-		if (GetTriggerKeyboard(DIK_7))
-		{
-			g_aEnemy[nCntEnemy].nLife += 1;
-		}
-		if (GetTriggerKeyboard(DIK_U))
-		{
-			g_aEnemy[nCntEnemy].nLife += -1;
-		}
-
 		//敵が使われていた時
 		if (g_aEnemy[nCntEnemy].bUse)
 		{
@@ -549,9 +539,8 @@ void UpdateEnemy(void)
 	//当たり判定
 	if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &pPlayer->pos, &pPlayer->move, &pPlayer->move, 10, 10))
 	{
-		//pPlayer->nLife -= 1;
+		pPlayer->nLife -= 1;
 	}
-
 }
 
 //=============================================================================

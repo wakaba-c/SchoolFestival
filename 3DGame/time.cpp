@@ -133,10 +133,10 @@ void MakeVertexTime(LPDIRECT3DDEVICE9 pDevice)
 	{
 		// 頂点座標
 		//頂点座標の設定(基準のx座標 + 間隔 * nCnt (+ 幅), 基準のy座標)
-		pVtx[0].pos = D3DXVECTOR3(587.0f + 53 * nCount, 10.0f, 0);
-		pVtx[1].pos = D3DXVECTOR3(587.0f + 53 * nCount + 50.0f, 10.0f, 0);
-		pVtx[2].pos = D3DXVECTOR3(587.0f + 53 * nCount, 80.0f, 0);
-		pVtx[3].pos = D3DXVECTOR3(587.0f + 53 * nCount + 50.0f, 80.0f, 0);
+		pVtx[0].pos = D3DXVECTOR3(1100.0f + 53 * nCount, 10.0f, 0);
+		pVtx[1].pos = D3DXVECTOR3(1100.0f + 53 * nCount + 50.0f, 10.0f, 0);
+		pVtx[2].pos = D3DXVECTOR3(1100.0f + 53 * nCount, 80.0f, 0);
+		pVtx[3].pos = D3DXVECTOR3(1100.0f + 53 * nCount + 50.0f, 80.0f, 0);
 
 		// 1.0で固定、同次座標
 		pVtx[0].rhw = 1.0f;
