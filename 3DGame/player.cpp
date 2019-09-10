@@ -491,7 +491,6 @@ void AnimationPlayer(void)
 		//攻撃の派生
 		if (g_player.nAnimationType == MOTIONTYPE_ATTACK_1)
 		{
-			//チャンスタイム
 			g_nCntAttacCombo++;
 
 			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
@@ -514,19 +513,27 @@ void AnimationPlayer(void)
 		else
 		{
 			//ループするかどうか
-			if (!g_player.aModel[0].aMotion[g_player.nAnimationType].nLoop)
+			if (g_player.aModel[0].aMotion[g_player.nAnimationType].nLoop)
 			{
-				g_player.nAnimationType = MOTIONTYPE_NEUTRAL;
+				//キーのリセット
+				g_player.CurrentKey = 0;
+				g_player.CurrentFrame = 0;
+			}
+			//まだ歩いている場合
+			else if (fabs(g_player.move.x) > 2 || fabs(g_player.move.z) > 2)
+			{
+				//キーのリセット
+				g_player.CurrentKey = 0;
+				g_player.CurrentFrame = 0;
+			}
+			else
+			{
+				//ニュートラルモーション
+				AnimationSwitch(MOTIONTYPE_NEUTRAL);
 				g_player.CurrentFrame = 0;
 
 				//キーのリセット
 				g_player.CurrentKey = 0;
-			}
-			else
-			{
-				//キーのリセット
-				g_player.CurrentKey = 0;
-				g_player.CurrentFrame = 0;
 			}
 		}
 	}
