@@ -37,6 +37,7 @@
 #include "magic.h"
 #include "hitpoint.h"
 #include "time.h"
+#include "skill.h"
 
 //========================================================================================
 // マクロ定義
@@ -135,6 +136,9 @@ void InitGame(void)
 	//タイムの初期化処理
 	InitTime();
 
+	// スキルの初期化処理
+	InitSkill();
+
 	PlaySound(SOUND_LABEL_BGM000);
 
 	g_nCounterGameState = 0;
@@ -201,6 +205,9 @@ void UninitGame(void)
 
 	//タイムの終了処理
 	UninitTime();
+
+	// スキルの終了処理
+	UninitSkill();
 
 }
 
@@ -270,6 +277,9 @@ void UpdateGame(void)
 
 		// 球体の更新処理
 		UpdateMeshSphere();
+
+		// スキルの更新処理
+		UpdateSkill();
 
 	}
 
@@ -408,6 +418,9 @@ void DrawGame(void)
 
 	//テロップの描画処理
 	DrawTelop();
+
+	// スキルの描画処理
+	DrawSkill();
 
 	//ポーズ
 	DrawPause();
