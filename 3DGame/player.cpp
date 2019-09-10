@@ -58,13 +58,14 @@ LPD3DXFONT			g_pPlayerFont = NULL;				// フォントへのポインタ
 void InitPlayer(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-	
+
 	g_player.bJump = false;
 	g_player.CurrentFrame = 0;									//現在のフレーム数
 	g_player.CurrentKey = 1;									//現在のキー
-	g_player.nAnimationType = 1;								//現在のアニメーション
+	g_player.nAnimationType = MOTIONTYPE_NEUTRAL;				//現在のアニメーション
 	g_player.nValueH = 0;										//コントローラー
 	g_player.nValueV = 0;										//コントローラー
+
 	// 位置・向きの初期設定
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
 	{
@@ -98,13 +99,6 @@ void InitPlayer(void)
 		D3DXLoadMeshFromX(g_player.aModel[nCntPlayer].sAdd, D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_player.aModel[nCntPlayer].pBuffMatPlayer, NULL, &g_player.aModel[nCntPlayer].nNumMatPlayer, &g_player.aModel[nCntPlayer].pMeshPlayer);
 	}
 
-	//// 位置・向きの初期設定
-	//for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
-	//{
-	//	g_player.aModel[nCntPlayer].posPlayer = g_player.aModel[nCntPlayer].originPos + g_player.aModel[nCntPlayer].aMotion[g_nAnimationType].aKey[0].pos;
-	//	g_player.aModel[nCntPlayer].rotPlayer = g_player.aModel[nCntPlayer].originRot + g_player.aModel[nCntPlayer].aMotion[g_nAnimationType].aKey[0].rot;
-	//}
-
 	g_player.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (IsFinish())
@@ -115,7 +109,7 @@ void InitPlayer(void)
 	{
 		g_player.nLife = 999;
 	}
-	
+
 	//影の作成
 	g_player.nIdxShadow = SetShadow(D3DXVECTOR3(1.0f,0.0f,10.0f), g_player.rot, D3DXVECTOR3(30.0f, 10.0f, 30.0f));
 }
@@ -194,7 +188,7 @@ void UpdatePlayer(void)
 
 	if (GetTelopState() == false)
 	{
-		if (g_player.nAnimationType != MOTIONTYPE_RUNATTACK && g_player.nAnimationType != MOTIONTYPE_ATTACK_1 && g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
+		if (g_player.nAnimationType != MOTIONTYPE_ATTACK_1 && g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
 		{
 			//================コントローラー===================//
 			GetJoypadStickLeft(0, &g_player.nValueH, &g_player.nValueV);
@@ -215,7 +209,7 @@ void UpdatePlayer(void)
 			}
 
 			//左右操作
-			if (GetKeyboardPress(DIK_A))
+			if (GetKeyboardPress(DIK_LEFT))
 			{
 				if (g_player.nAnimationType != MOTIONTYPE_RUN)
 				{
@@ -229,12 +223,15 @@ void UpdatePlayer(void)
 
 			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
 			{
-				g_player.nAnimationType = MOTIONTYPE_ATTACK_1;
-				g_player.CurrentKey = 0;
-				g_player.CurrentFrame = 0;
+				if (g_player.nAnimationType != MOTIONTYPE_ATTACK_1 && g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
+				{
+					g_player.nAnimationType = MOTIONTYPE_ATTACK_1;
+					g_player.CurrentKey = 0;
+					g_player.CurrentFrame = 0;
+				}
 			}
 
-			else if (GetKeyboardPress(DIK_D))
+			else if (GetKeyboardPress(DIK_RIGHT))
 			{
 				if (g_player.nAnimationType != MOTIONTYPE_RUN)
 				{
@@ -352,7 +349,7 @@ void DrawPlayer(void)
 	D3DXMATRIX		mtxRot, mtxTrans;				//計算用マトリックス
 	D3DXMATERIAL	*pMat;							//現在のマテリアル保存用
 	D3DMATERIAL9	matDef;							//マテリアルデータへのポインタ
-	
+
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&g_player.mtxWorld);
@@ -427,7 +424,7 @@ void DrawPlayer(void)
 // プレイヤーアニメーション
 //=============================================================================
 void AnimationPlayer(void)
-{	
+{
 	//モーションの最大値処理
 	if (g_player.nAnimationType < 0)
 	{
@@ -606,7 +603,7 @@ void DrawPlayerData(void)
 	strcat(&sAnimation[0], &sData[0]);
 	sprintf(&sData[0], "キー数 : %d\n", g_player.CurrentKey);
 	strcat(&sAnimation[0], &sData[0]);
-	
+
 
 	strcat(&sAnimation[0], "==============親情報===============\n");
 	sprintf(&sData[0], "[%d] : (%.6f, %.6f, %.6f)\n", 0, g_player.pos.x, g_player.pos.y, g_player.pos.z);

@@ -51,7 +51,7 @@ D3DXVECTOR3				g_EffectPos4;
 D3DXVECTOR3				g_EffectPos5;
 D3DXVECTOR3				g_EffectPos6;
 D3DXVECTOR3				g_EffectPos7;
-D3DXVECTOR3				g_EffectPos8; 
+D3DXVECTOR3				g_EffectPos8;
 int g_Number = 3;									//“G‚Ìl”
 
 //=============================================================================
@@ -468,22 +468,10 @@ void UpdateEnemy(void)
 			{
 				g_aEnemy[nCntEnemy].nLife -= 1;
 			}
-			
+
 			//“G‚ªUŒ‚‚ðŽó‚¯‚Ä‚¢‚é‚©‚Ç‚¤‚©
 			if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_DAMAGE)
 			{
-				//ƒvƒŒƒCƒ„[‚ÌUŒ‚•û–@‚ª”ò‚Ñž‚ÝUŒ‚‚¾‚Á‚½Žž
-				if (pPlayer->nAnimationType == MOTIONTYPE_RUNATTACK)
-				{
-					if (SphereModel(COLLISIONTYPE_WEAPON, &D3DXVECTOR3(GetOrbit()->_41, GetOrbit()->_42, GetOrbit()->_43), &g_aEnemy[nCntEnemy].pos, &pPlayer->move, &g_aEnemy[nCntEnemy].move, 20, 20))
-					{
-						g_aEnemy[nCntEnemy].nLife -= 3;
-						g_aEnemy[nCntEnemy].nCntAttack = 0;
-						g_aEnemy[nCntEnemy].nAnimationEnemy = MOTIONENEMY_DAMAGE;
-
-					}
-				}
-				
 				//ƒvƒŒƒCƒ„[‚ÌUŒ‚•û–@‚ª’ÊíUŒ‚‚¾‚Á‚½Žž
 				if (pPlayer->nAnimationType == MOTIONTYPE_ATTACK_1)
 				{
@@ -494,7 +482,7 @@ void UpdateEnemy(void)
 						g_aEnemy[nCntEnemy].nAnimationEnemy = MOTIONENEMY_DAMAGE;
 					}
 				}
-				
+
 				//ƒvƒŒƒCƒ„[‚ÌUŒ‚•û–@‚ª’ÊíUŒ‚‚¾‚Á‚½Žž
 				if (pPlayer->nAnimationType == MOTIONTYPE_ATTACK_2)
 				{
