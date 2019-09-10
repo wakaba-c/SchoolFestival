@@ -149,24 +149,6 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	POINTER *pPointer;
-
-	pPointer = GetPointer();
-
-	float fX_Difference;
-	float fY_Difference;
-	float fDifference;
-
-
-	// カーソルとプレイヤーのⅩ座標差分
-	fX_Difference = g_player.pos.x - pPointer->pos.x;
-
-	// カーソルとプレイヤーのＹ座標差分
-	fY_Difference = g_player.pos.y - pPointer->pos.y + 100;
-
-	// カーソルとプレイヤーの一定距離
-	fDifference = sqrtf(fX_Difference * fX_Difference + fY_Difference * fY_Difference);
-
 	CAMERA *pCamera = GetCamera();
 	MAGIC *pMagic = GetMagic();
 
@@ -217,7 +199,7 @@ void UpdatePlayer(void)
 				}
 				g_player.move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
 				g_player.move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-				//g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
+				g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
 				pCamera->nCount = 0;
 			}
 
@@ -239,7 +221,7 @@ void UpdatePlayer(void)
 				}
 				g_player.move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
 				g_player.move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
-				//g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
+				g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
 				pCamera->nCount = 0;
 			}
 		}
@@ -260,15 +242,14 @@ void UpdatePlayer(void)
 				BulletPos();
 			}
 		}
-		if (g_player.pos.x >= pPointer->pos.x)
-		{
-			g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
-		}
-		else if (g_player.pos.x <= pPointer->pos.x)
-		{
-			g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
-			g_player.aModel[2].originRot.x = (float)atan2(fX_Difference, fY_Difference) * -1;
-		}
+		//if (g_player.pos.x >= pPointer->pos.x)
+		//{
+		//	g_player.dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
+		//}
+		//else if (g_player.pos.x <= pPointer->pos.x)
+		//{
+		//	g_player.dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
+		//}
 
 		g_player.aModel[2].originRot.z = 1.57f;
 	}

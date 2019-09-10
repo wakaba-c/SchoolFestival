@@ -138,6 +138,8 @@ void InitGame(void)
 	PlaySound(SOUND_LABEL_BGM000);
 
 	g_nCounterGameState = 0;
+
+	SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 999);
 }
 
 //========================================================================================
@@ -249,7 +251,7 @@ void UpdateGame(void)
 
 		// 敵の更新処理
 		UpdateEnemy();
-		
+
 		// ポインタの更新処理
 		UpdatePointer();
 
