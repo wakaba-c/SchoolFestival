@@ -65,7 +65,7 @@ void InitCamera(void)
 //=============================================================================
 void UninitCamera(void)
 {
-	
+
 }
 
 //=============================================================================
@@ -125,7 +125,7 @@ void UpdateCamera(void)
 
 		//g_camera.rot.y += (g_camera.rotDest.y - g_camera.rot.y) * 0.02f;
 
-		g_camera.posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.x + 100;
+		g_camera.posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.x;
 		g_camera.posRDest.y = pPlayer->pos.y + 50;
 		g_camera.posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.z;
 
@@ -150,7 +150,7 @@ void UpdateCamera(void)
 		g_camera.posV.y = 70 + 30.0f;
 		g_camera.posV.z = -250.0f + cosf(D3DX_PI + 0.5f) * 50;
 	}
-	
+
 	//モードランキングだった場合
 	else if (GetMode() == MODE_RANKING)
 	{
