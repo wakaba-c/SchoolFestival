@@ -121,8 +121,8 @@ void UpdateTutorial(void)
 
 		if (g_nCountPage == 4)
 		{
-			SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 999);
 			//SetLayout(LAYOUTTYPE_NONE);
+			//SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 999);
 		}
 
 		if (g_nCountPage == 5)

@@ -45,16 +45,16 @@ HRESULT InitMouse(HINSTANCE hInstance, HWND hWnd)
 
 	g_pDevMouse->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
-	// デバイスの設定    
+	// デバイスの設定
 	DIPROPDWORD diprop;
 	diprop.diph.dwSize = sizeof(diprop);
 	diprop.diph.dwHeaderSize = sizeof(diprop.diph);
 	diprop.diph.dwObj = 0;
 	diprop.diph.dwHow = DIPH_DEVICE;
-	diprop.dwData = DIPROPAXISMODE_REL; // 相対値モードで設定（絶対値はDIPROPAXISMODE_ABS）    
+	diprop.dwData = DIPROPAXISMODE_REL; // 相対値モードで設定（絶対値はDIPROPAXISMODE_ABS）
 	g_pDevMouse->SetProperty(DIPROP_AXISMODE, &diprop.diph);
 
-	// 入力制御開始    
+	// 入力制御開始
 	g_pDevMouse->Acquire();
 
 	// 代入
@@ -72,7 +72,7 @@ void UpdateMouse(void)
 	int nCntButton;
 	POINT point;
 
-	// 値の初期化    
+	// 値の初期化
 	g_mouse.mouseState.rgbButtons[0] = 0;
 
 	GetCursorPos(&point);
@@ -80,7 +80,7 @@ void UpdateMouse(void)
 	g_mouse.posX = (float)point.x;
 	g_mouse.posY = (float)point.y;
 
-	// 値の更新 
+	// 値の更新
 	if (SUCCEEDED(g_pDevMouse->GetDeviceState(sizeof(DIMOUSESTATE2), &g_mouse.mouseState)))
 	{
 		for (nCntButton = 0; nCntButton < NUM_BUTTON_MAX; nCntButton++)
@@ -92,7 +92,7 @@ void UpdateMouse(void)
 	}
 	else
 	{
-		g_pDevMouse->Acquire(); // １発目や２発目にエラーが出るが無視してよい。 
+		g_pDevMouse->Acquire(); // １発目や２発目にエラーが出るが無視してよい。
 	}
 }
 
