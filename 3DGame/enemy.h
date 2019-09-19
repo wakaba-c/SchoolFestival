@@ -100,7 +100,8 @@ typedef struct
 	int CurrentEnemyFrame = 0;								//現在のフレーム数
 	int CurrentEnemyKey = 1;								//現在のキー
 	int nAnimationEnemy = 0;								//現在のアニメーション
-
+	float nValueH;											//コントローラー
+	float nValueV;											//コントローラー
 	int nCntAttack = 0;										//アタックするまでのカウンタ
 
 } ENEMY;

@@ -12,7 +12,7 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define DISTANCE -350						//距離
+#define DISTANCE -400						//距離
 
 //=============================================================================
 // プロトタイプ宣言
@@ -125,13 +125,13 @@ void UpdateCamera(void)
 
 		//g_camera.rot.y += (g_camera.rotDest.y - g_camera.rot.y) * 0.02f;
 
-		g_camera.posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.x;
-		g_camera.posRDest.y = pPlayer->pos.y + 50;
-		g_camera.posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->rot.y) + pPlayer->move.z;
+		//g_camera.posRDest.x =sinf(D3DX_PI + pPlayer->rot.y);
+		g_camera.posRDest.y = 50;
+		//g_camera.posRDest.z =cosf(D3DX_PI + pPlayer->rot.y);
 
-		g_camera.posVDest.x = pPlayer->pos.x + sinf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce + pPlayer->move.x;
-		g_camera.posVDest.y = pPlayer->pos.y + 50;
-		g_camera.posVDest.z = pPlayer->pos.z + cosf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce + pPlayer->move.z;
+		g_camera.posVDest.x =sinf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce;
+		g_camera.posVDest.y = 150;
+		g_camera.posVDest.z =cosf(D3DX_PI + g_camera.rot.y) * g_camera.fDistonce;
 
 		g_camera.posV += (g_camera.posVDest - g_camera.posV) * 0.2f;
 

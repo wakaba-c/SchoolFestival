@@ -143,7 +143,7 @@ void InitGame(void)
 
 	g_nCounterGameState = 0;
 
-	SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 999);
+	SetEnemy(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), 999);
 }
 
 //========================================================================================

@@ -121,7 +121,7 @@ void UpdateTelop(void)
 		}
 	}
 
-	if (GetTriggerKeyboard(DIK_W))
+	if (GetTriggerKeyboard(DIK_Z))
 	{
 		SetStageTelop(TELOPTYPE_MESSAGEWINDOW, TELOPPAGE_START);
 	}
