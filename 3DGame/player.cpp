@@ -99,7 +99,7 @@ void InitPlayer(void)
 		D3DXLoadMeshFromX(g_player.aModel[nCntPlayer].sAdd, D3DXMESH_SYSTEMMEM, pDevice, NULL, &g_player.aModel[nCntPlayer].pBuffMatPlayer, NULL, &g_player.aModel[nCntPlayer].nNumMatPlayer, &g_player.aModel[nCntPlayer].pMeshPlayer);
 	}
 
-	g_player.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	g_player.pos = D3DXVECTOR3(50.0f, 0.0f, 0.0f);
 
 	if (IsFinish())
 	{
@@ -203,7 +203,7 @@ void UpdatePlayer(void)
 				pCamera->nCount = 0;
 			}
 
-			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
+			if (GetTriggerKeyboard(DIK_RSHIFT) || GetControllerTrigger(0, JOYPADKEY_X))
 			{
 				if (g_player.nAnimationType != MOTIONTYPE_ATTACK_1 && g_player.nAnimationType != MOTIONTYPE_ATTACK_2)
 				{
@@ -226,7 +226,7 @@ void UpdatePlayer(void)
 			}
 		}
 
-		if (GetTriggerKeyboard(DIK_SPACE) || GetControllerPress(0, JOYPADKEY_A))
+		if (GetTriggerKeyboard(DIK_UP) || GetControllerPress(0, JOYPADKEY_A))
 		{
 			if (g_player.bJump == false)
 			{
@@ -474,7 +474,7 @@ void AnimationPlayer(void)
 		{
 			g_nCntAttacCombo++;
 
-			if (GetTriggerKeyboard(DIK_X) || GetControllerTrigger(0, JOYPADKEY_X))
+			if (GetTriggerKeyboard(DIK_RSHIFT) || GetControllerTrigger(0, JOYPADKEY_X))
 			{
 				g_player.nAnimationType = MOTIONTYPE_ATTACK_2;
 				g_player.CurrentKey = 0;

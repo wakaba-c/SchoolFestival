@@ -56,11 +56,11 @@ void InitMagic(void)
 		NULL);
 
 	//テクスチャ設定
-	SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
+	//SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), MAX_WIDTH, MAX_HEIGHT);
 
-	SetVertexMagic(1, D3DXVECTOR3(50, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 10.0f, 35.0f);
+	//SetVertexMagic(1, D3DXVECTOR3(50, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), MAX_WIDTH + 10.0f, 35.0f);
 
-	SetVertexMagic(2, D3DXVECTOR3(20, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
+	//SetVertexMagic(2, D3DXVECTOR3(20, 50, 0), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40, 30);
 
 }
 //=============================================================================
@@ -112,7 +112,7 @@ void UpdateMagic(void)
 	NowMagic = g_Magic.fNowMagic / g_Magic.fMaxMagic;									//魔力の比率計算
 	fWidth = NowMagic * g_Magic.fWidth;													//描画すべき画像幅がいくらなのか
 
-	SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
+	//SetVertexMagic(0, D3DXVECTOR3(55, 55, 0), D3DXCOLOR(0.059f, 0.32f, 0.73f, 1.0f), fWidth, MAX_HEIGHT);
 }
 //=============================================================================
 // 描画処理

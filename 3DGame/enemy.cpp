@@ -28,12 +28,14 @@
 #define PLAYER_GRAVITY 2
 #define MAX_ENEMY	1
 #define MAX_LIFE 30
+#define ENEMY_GRAVITY 0.5
 
 //=============================================================================
 // プロトタイプ宣言
 //=============================================================================
 void AnimationEnemy(float fDifference);
 bool CollisionExtinction(int nNum);
+void AnimationSwitchEnemy(MOTIONENEMY nType);
 
 //=============================================================================
 // グローバル変数
@@ -53,6 +55,9 @@ D3DXVECTOR3				g_EffectPos6;
 D3DXVECTOR3				g_EffectPos7;
 D3DXVECTOR3				g_EffectPos8;
 int g_Number = 3;									//敵の人数
+float g_fVelocityEnemy = 10;
+int g_bAnimationEnemy = true;							//アニメーションのプレイ
+
 
 //=============================================================================
 // 初期化処理
@@ -78,12 +83,16 @@ void InitEnemy(void)
 			g_aEnemy[nCntModel].aModel[nCntEnemy].posEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			g_aEnemy[nCntModel].aModel[nCntEnemy].moveEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			g_aEnemy[nCntModel].aModel[nCntEnemy].rotEnemy = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			g_aEnemy[nCntModel].aModel[nCntEnemy].originPos - D3DXVECTOR3(0, 0, 0);
+			g_aEnemy[nCntModel].aModel[nCntEnemy].originRot - D3DXVECTOR3(0, 0, 0);
 			g_aEnemy[nCntModel].bJump = false;
 			g_aEnemy[nCntModel].bUse = false;
 
 			g_aEnemy[nCntModel].CurrentEnemyFrame = 0;								//現在のフレーム数
 			g_aEnemy[nCntModel].CurrentEnemyKey = 0;								//現在のキー
 			g_aEnemy[nCntModel].nAnimationEnemy = 0;								//現在のアニメーション
+			g_aEnemy[nCntModel].nValueH = 0;										//コントローラー
+			g_aEnemy[nCntModel].nValueV = 0;										//コントローラー
 			g_aEnemy[nCntModel].nCntAttack = 0;
 		}
 	}
@@ -110,7 +119,7 @@ void InitEnemy(void)
 
 	if (GetMode() == MODE_GAME && IsFinish())
 	{
-		SetEnemy(D3DXVECTOR3(200.0f, 0.0f, 0.0f), 25);
+		SetEnemy(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), 25);
 
 		//SetEnemy(D3DXVECTOR3(00.0f, 0.0f, 100.0f), 25);
 
@@ -150,6 +159,7 @@ void UpdateEnemy(void)
 	float fAngle1 = 0;
 	float fSpeed = 2.5;
 
+	CAMERA *pCamera = GetCamera();
 	PLAYER *pPlayer = GetPlayer();
 	BULLET *pBullet = GetBullet();
 
@@ -183,6 +193,131 @@ void UpdateEnemy(void)
 
 			AnimationEnemy(fDifference);
 
+			//テロップがない時
+			if (GetTelopState() == false)
+			{
+				if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_1 && g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_2)
+				{
+					//================コントローラー===================//
+					GetJoypadStickLeft(0, &g_aEnemy[nCntEnemy].nValueH, &g_aEnemy[nCntEnemy].nValueV);
+
+					//角度
+					g_aEnemy[nCntEnemy].dest.y = atan2f(-g_aEnemy[nCntEnemy].move.x, -g_aEnemy[nCntEnemy].move.z);
+
+					//移動
+					g_aEnemy[nCntEnemy].move -= D3DXVECTOR3(sinf(D3DX_PI * 1.0f + pCamera->rot.y) * (1.5f * g_aEnemy[nCntEnemy].nValueV), 0, cosf(D3DX_PI * 1.0f + pCamera->rot.y) * (1.5f * g_aEnemy[nCntEnemy].nValueV));
+					g_aEnemy[nCntEnemy].move += D3DXVECTOR3(sinf(D3DX_PI * 0.5f + pCamera->rot.y) * (1.5f * g_aEnemy[nCntEnemy].nValueH), 0, cosf(D3DX_PI * 0.5f + pCamera->rot.y) * (1.5f * g_aEnemy[nCntEnemy].nValueH));
+
+					if (fabs(g_aEnemy[nCntEnemy].move.x) > 1 || fabs(g_aEnemy[nCntEnemy].move.z) > 1)
+					{
+						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_RUN)
+						{
+							AnimationSwitchEnemy(MOTIONENEMY_RUN);
+						}
+					}
+
+					//左移動
+					if (GetKeyboardPress(DIK_A))
+					{
+						g_aEnemy[nCntEnemy].move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+						g_aEnemy[nCntEnemy].move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+						g_aEnemy[nCntEnemy].dest.y = D3DX_PI * 0.5f + pCamera->rot.y;
+						pCamera->nCount = 0;
+					}
+					//右移動
+					if (GetKeyboardPress(DIK_D))
+					{
+						g_aEnemy[nCntEnemy].move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+						g_aEnemy[nCntEnemy].move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * 1.0f;
+						g_aEnemy[nCntEnemy].dest.y = -D3DX_PI * 0.5f + pCamera->rot.y;
+						pCamera->nCount = 0;
+					}
+					//攻撃
+					if (GetTriggerKeyboard(DIK_LSHIFT) || GetControllerTrigger(1, JOYPADKEY_X))
+					{
+						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_1 && g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_2)
+						{
+							g_aEnemy[nCntEnemy].nAnimationEnemy = MOTIONENEMY_ATTACK_1;
+							g_aEnemy[nCntEnemy].CurrentEnemyKey = 0;
+							g_aEnemy[nCntEnemy].CurrentEnemyFrame = 0;
+						}
+					}
+				}
+
+				//ジャンプ
+				if (GetTriggerKeyboard(DIK_W) || GetControllerPress(1, JOYPADKEY_A))
+				{
+					if (g_aEnemy[nCntEnemy].bJump == false)
+					{
+						g_aEnemy[nCntEnemy].bJump = true;
+						g_aEnemy[nCntEnemy].move.y += g_fVelocityEnemy;
+					}
+				}
+			}
+
+			//座標の移動
+			g_aEnemy[nCntEnemy].pos += g_aEnemy[nCntEnemy].move;
+
+			//減少
+			g_aEnemy[nCntEnemy].move.x += (0 - g_aEnemy[nCntEnemy].move.x) * 0.2f;
+			g_aEnemy[nCntEnemy].move.z += (0 - g_aEnemy[nCntEnemy].move.z) * 0.2f;
+
+			//キャラクターの振り向き
+			g_aEnemy[nCntEnemy].Difference.y = g_aEnemy[nCntEnemy].rot.y - g_aEnemy[nCntEnemy].dest.y;
+
+			if (g_aEnemy[nCntEnemy].Difference.y > D3DX_PI)
+			{
+				g_aEnemy[nCntEnemy].Difference.y -= D3DX_PI * 2;
+			}
+			else if (g_aEnemy[nCntEnemy].Difference.y < -D3DX_PI)
+			{
+				g_aEnemy[nCntEnemy].Difference.y += D3DX_PI * 2;
+			}
+
+			g_aEnemy[nCntEnemy].rot.y -= g_aEnemy[nCntEnemy].Difference.y * 0.1f;
+
+			if (g_aEnemy[nCntEnemy].rot.y < -D3DX_PI)
+			{
+				g_aEnemy[nCntEnemy].rot.y += D3DX_PI * 2;
+			}
+			else if (g_aEnemy[nCntEnemy].rot.y > D3DX_PI)
+			{
+				g_aEnemy[nCntEnemy].rot.y -= D3DX_PI * 2;
+			}
+
+			if (GetTriggerKeyboard(DIK_F6))
+			{
+				if (g_bAnimationEnemy)
+				{
+					g_bAnimationEnemy = false;
+				}
+				else if (!g_bAnimationEnemy)
+				{
+					g_bAnimationEnemy = true;
+				}
+			}
+
+			//重力
+			g_aEnemy[nCntEnemy].move.y -= ENEMY_GRAVITY;
+
+			//モデルの上にいる時
+			if (CollisionModel(&g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].posOld, &g_aEnemy[nCntEnemy].move) == true)
+			{
+				g_aEnemy[nCntEnemy].bJump = false;
+				g_aEnemy[nCntEnemy].move.y = 0.0f;
+			}
+			else
+			{
+				g_aEnemy[nCntEnemy].bJump = true;
+			}
+
+			//プレイヤーが床に着いた時
+			if (g_aEnemy[nCntEnemy].pos.y <= 0)
+			{
+				g_aEnemy[nCntEnemy].pos.y = 0.0f;
+				g_aEnemy[nCntEnemy].move.y = 0.0f;
+				g_aEnemy[nCntEnemy].bJump = false;
+			}
 
 			//敵の当たり判定
 			if (pBullet->pos.x < g_aEnemy[nCntEnemy].pos.x - 10.0f &&
@@ -464,10 +599,10 @@ void UpdateEnemy(void)
 			CollisionModel(&g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].posOld, &g_aEnemy[nCntEnemy].move);
 
 			//当たり判定
-			if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].move, &pPlayer->move, 10, 10))
-			{
-				g_aEnemy[nCntEnemy].nLife -= 1;
-			}
+			//if (SphereModel(COLLISIONTYPE_WEAPON, &pBullet->pos, &g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].move, &pPlayer->move, 10, 10))
+			//{
+			//	g_aEnemy[nCntEnemy].nLife -= 1;
+			//}
 
 			//敵が攻撃を受けているかどうか
 			if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_DAMAGE)
@@ -701,7 +836,7 @@ void AnimationEnemy(float fDifference)
 				//アニメーションがアタックモーションだった時
 				if (g_aEnemy[nCntEnemy].nAnimationEnemy == MOTIONENEMY_ATTACK_1)
 				{
-					if (fDifference < 50)
+					if (fDifference < 150)
 					{
 						if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_2)
 						{
@@ -770,13 +905,36 @@ bool CollisionExtinction(int nNum)
 	{
 		if (g_Number == 2)
 		{
-			SetEnemy(D3DXVECTOR3(100.0f, 0.0f, 100.0f), 25);
+			SetEnemy(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), 25);
 		}
 		else if (g_Number == 1)
 		{
-			SetEnemy(D3DXVECTOR3(-100.0f, 0.0f, 100.0f), 25);
+			SetEnemy(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), 25);
 		}
 	}
 
 	return bDispersion;
+}
+
+//=============================================================================
+// アニメーションの切り替え
+//=============================================================================
+void AnimationSwitchEnemy(MOTIONENEMY nType)
+{
+	g_aEnemy[0].nAnimationEnemy = nType;
+	g_aEnemy[0].CurrentEnemyKey = 0;
+	g_aEnemy[0].CurrentEnemyFrame = 0;
+
+	//switch (nType)
+	//{
+	//case MOTIONTYPE_NEUTRAL:
+	//	g_nAnimationType = MOTIONTYPE_NEUTRAL;
+	//	g_CurrentKey = 0;
+	//	g_CurrentFrame = 0;
+	//	break;
+	//case MOTIONTYPE_ATTACK:
+	//	break;
+	//case MOTIONTYPE_RUN:
+	//	break;
+	//}
 }
