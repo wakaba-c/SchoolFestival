@@ -24,7 +24,7 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define PLAYER_GRAVITY	2
+#define PLAYER_GRAVITY	0.5
 
 //=============================================================================
 // プロトタイプ宣言
@@ -32,7 +32,7 @@
 void AnimationPlayer(void);
 void AnimationSwitch(MOTIONTYPE nType);
 void BulletPos(void);
-float g_fVelocity = 20;
+float g_fVelocity = 10;
 
 #ifdef _DEBUG
 void DrawPlayerData(void);
