@@ -12,7 +12,7 @@
 #define	NUM_KEY_MAX			(256)						// キーの最大数
 #define COUNT_WAIT_REPEAT	(20)						//リピート開始までの待ち時間
 #define INTERVAL_REPEAT		(1)							//リピート間隔
-#define	NUM_JOYPAD_MAX		(4)							//パッド最大数
+#define	NUM_JOYPAD_MAX		(2)							//パッド最大数
 #define JOY_MAX_RANGE		(1024)						//パッドの有効範囲
 
 //=============================================================================
@@ -144,7 +144,7 @@ HRESULT InitController(HINSTANCE hInstance, HWND hWnd)
 void UninitController(void)
 {
 	//ジョイパッドの終了処理
-	for (int nCntPad = 0; nCntPad < 2; nCntPad++)
+	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
 	{
 		// 入力デバイス(コントローラー)の開放
 		if (g_apDIDevJoypad[g_nCntPad] != NULL)
@@ -284,7 +284,7 @@ BOOL CALLBACK EnumAxesCallbackJoypad(const LPCDIDEVICEOBJECTINSTANCE lpddi, LPVO
 {
 	HRESULT hr;
 
-	for (int nCntPad = 0; nCntPad < 2; nCntPad++)
+	for (int nCntPad = 0; nCntPad < NUM_JOYPAD_MAX; nCntPad++)
 	{
 		DIPROPRANGE diprg;
 

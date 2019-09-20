@@ -199,7 +199,7 @@ void UpdateEnemy(void)
 				if (g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_1 && g_aEnemy[nCntEnemy].nAnimationEnemy != MOTIONENEMY_ATTACK_2)
 				{
 					//================コントローラー===================//
-					GetJoypadStickLeft(0, &g_aEnemy[nCntEnemy].nValueH, &g_aEnemy[nCntEnemy].nValueV);
+					GetJoypadStickLeft(1, &g_aEnemy[nCntEnemy].nValueH, &g_aEnemy[nCntEnemy].nValueV);
 
 					//角度
 					g_aEnemy[nCntEnemy].dest.y = atan2f(-g_aEnemy[nCntEnemy].move.x, -g_aEnemy[nCntEnemy].move.z);
